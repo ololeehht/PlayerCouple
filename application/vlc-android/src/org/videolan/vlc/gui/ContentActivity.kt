@@ -110,6 +110,7 @@ open class ContentActivity : AudioPlayerContainerActivity(), SearchView.OnQueryT
         return true
     }
 
+ 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.ml_menu_search -> {

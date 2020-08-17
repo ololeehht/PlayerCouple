@@ -1,23 +1,3 @@
-/*****************************************************************************
- * VideoGridFragment.kt
- *
- * Copyright © 2019 VLC authors and VideoLAN
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
- */
-
 package org.videolan.vlc.gui.video
 
 import android.content.Intent
@@ -33,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.qh.mplayer.utils.LogUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.onEach
 import org.videolan.medialibrary.interfaces.Medialibrary
@@ -67,7 +48,7 @@ import org.videolan.vlc.viewmodels.mobile.VideosViewModel
 import org.videolan.vlc.viewmodels.mobile.getViewModel
 import java.util.*
 
-private const val TAG = "VLC/VideoListFragment"
+private const val TAG = "VideoGridFragment"
 
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -135,11 +116,11 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.ml_menu_last_playlist).isVisible = settings.contains(KEY_MEDIA_LAST_PLAYLIST)
+       // menu.findItem(R.id.ml_menu_last_playlist).isVisible = settings.contains(KEY_MEDIA_LAST_PLAYLIST)
         menu.findItem(R.id.ml_menu_video_group).isVisible = viewModel.group == null && viewModel.folder == null
-        val displayInCards = settings.getBoolean("video_display_in_cards", true)
+        /*val displayInCards = settings.getBoolean("video_display_in_cards", true)
         menu.findItem(R.id.ml_menu_display_grid).isVisible = !displayInCards
-        menu.findItem(R.id.ml_menu_display_list).isVisible = displayInCards
+        menu.findItem(R.id.ml_menu_display_list).isVisible = displayInCards*/
         menu.findItem(R.id.rename_group).isVisible = viewModel.group != null
         menu.findItem(R.id.ungroup).isVisible = viewModel.group != null
     }
@@ -149,11 +130,11 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
             R.id.ml_menu_last_playlist -> {
                 MediaUtils.loadlastPlaylist(activity, PLAYLIST_TYPE_VIDEO)
             }
-            R.id.ml_menu_display_list, R.id.ml_menu_display_grid -> {
+           /* R.id.ml_menu_display_list, R.id.ml_menu_display_grid -> {
                 val displayInCards = settings.getBoolean(KEY_VIDEOS_CARDS, true)
                 settings.putSingle(KEY_VIDEOS_CARDS, !displayInCards)
                 (activity as ContentActivity).forceLoadVideoFragment()
-            }
+            }*/
             R.id.video_min_group_length_disable -> {
                 settings.putSingle(KEY_GROUP_VIDEOS, GROUP_VIDEOS_NONE)
                 changeGroupingType(VideoGroupingType.NONE)
@@ -252,17 +233,18 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
     override fun getMultiHelper(): MultiSelectHelper<VideosViewModel>? = if (::videoListAdapter.isInitialized) videoListAdapter.multiSelectHelper as? MultiSelectHelper<VideosViewModel> else null
 
     private fun updateViewMode() {
+        val listMode = true//!settings.getBoolean(KEY_VIDEOS_CARDS, true)
+        LogUtils.loge("====${"updateViewMode"}&& the list mode is: ${listMode}")
         if (view == null || activity == null) {
             Log.w(TAG, "Unable to setup the view")
             return
         }
         val res = resources
         if (gridItemDecoration == null) gridItemDecoration = ItemOffsetDecoration(resources, R.dimen.left_right_1610_margin, R.dimen.top_bottom_1610_margin)
-        val listMode = !settings.getBoolean(KEY_VIDEOS_CARDS, true)
 
         // Select between grid or list
         binding.videoGrid.removeItemDecoration(gridItemDecoration!!)
-        if (!listMode) {
+        if (!listMode) {//gridMode
             val thumbnailWidth = res.getDimensionPixelSize(R.dimen.grid_card_thumb_width)
             val margin = binding.videoGrid.paddingStart + binding.videoGrid.paddingEnd
             val columnWidth = binding.videoGrid.getPerfectColumnWidth(thumbnailWidth, margin) - res.getDimensionPixelSize(R.dimen.left_right_1610_margin) * 2
@@ -271,7 +253,7 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
             binding.videoGrid.addItemDecoration(gridItemDecoration!!)
         }
         binding.videoGrid.setNumColumns(if (listMode) 1 else -1)
-        if (videoListAdapter.isListMode != listMode) videoListAdapter.isListMode = listMode
+        //if (videoListAdapter.isListMode != listMode) videoListAdapter.isListMode = listMode
     }
 
     override fun onFabPlayClick(view: View) {

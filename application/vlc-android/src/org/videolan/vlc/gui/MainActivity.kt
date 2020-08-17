@@ -1,23 +1,3 @@
-/*****************************************************************************
- * MainActivity.java
- *
- * Copyright © 2011-2019 VLC authors and VideoLAN
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
- */
-
 package org.videolan.vlc.gui
 
 import android.annotation.SuppressLint
@@ -26,7 +6,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.MenuItem
@@ -46,7 +25,6 @@ import org.videolan.tools.*
 import org.videolan.vlc.BuildConfig
 import org.videolan.vlc.R
 import org.videolan.vlc.StartActivity
-//import org.videolan.vlc.donations.VLCBilling
 import org.videolan.vlc.extensions.ExtensionManagerService
 import org.videolan.vlc.extensions.ExtensionsManager
 import org.videolan.vlc.gui.audio.AudioBrowserFragment
@@ -63,7 +41,7 @@ import org.videolan.vlc.reloadLibrary
 import org.videolan.vlc.util.Permissions
 import org.videolan.vlc.util.Util
 
-private const val TAG = "VLC/MainActivity"
+private const val TAG = "MPlayer/MainActivity"
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -101,8 +79,6 @@ class MainActivity : ContentActivity(),
             data
         }
         mainLoadingProgress.indeterminateDrawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN)
-        //尝试让人打赏
-        //VLCBilling.getInstance(application).retrieveSkus()
     }
 
 
