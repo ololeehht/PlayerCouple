@@ -79,6 +79,7 @@ class MainActivity : ContentActivity(),
             data
         }
         mainLoadingProgress.indeterminateDrawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN)
+    
     }
 
 

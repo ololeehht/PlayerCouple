@@ -181,8 +181,8 @@ class AudioAlbumsSongsFragment : BaseAudioBrowser<AlbumSongsViewModel>(), SwipeR
             menu.findItem(R.id.ml_menu_sortby_date).isVisible = canSortByReleaseDate()
             menu.findItem(R.id.ml_menu_sortby_last_modified).isVisible = canSortByLastModified()
             menu.findItem(R.id.ml_menu_sortby_number).isVisible = false
-            menu.findItem(R.id.ml_menu_display_grid).isVisible = !viewModel.providersInCard[currentTab]
-            menu.findItem(R.id.ml_menu_display_list).isVisible = viewModel.providersInCard[currentTab]
+          /*  menu.findItem(R.id.ml_menu_display_grid).isVisible = !viewModel.providersInCard[currentTab]
+            menu.findItem(R.id.ml_menu_display_list).isVisible = viewModel.providersInCard[currentTab]*/
             menu.findItem(R.id.ml_menu_sortby_media_number).isVisible = canSortByMediaNumber()
         }
         sortMenuTitles()
@@ -190,14 +190,14 @@ class AudioAlbumsSongsFragment : BaseAudioBrowser<AlbumSongsViewModel>(), SwipeR
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.ml_menu_display_list, R.id.ml_menu_display_grid -> {
+          /*  R.id.ml_menu_display_list, R.id.ml_menu_display_grid -> {
                 viewModel.providersInCard[currentTab] = item.itemId == R.id.ml_menu_display_grid
                 setupLayoutManager(viewModel.providersInCard[currentTab], lists[currentTab], viewModel.providers[currentTab] as MedialibraryProvider<MediaLibraryItem>, adapters[currentTab], spacing)
                 lists[currentTab].adapter = adapters[currentTab]
                 activity?.invalidateOptionsMenu()
                 Settings.getInstance(requireActivity()).putSingle(viewModel.displayModeKeys[currentTab], item.itemId == R.id.ml_menu_display_grid)
                 true
-            }
+            }*/
             else -> super.onOptionsItemSelected(item)
         }
     }

@@ -30,6 +30,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -57,10 +58,10 @@ open class ContentActivity : AudioPlayerContainerActivity(), SearchView.OnQueryT
 
     override fun initAudioPlayerContainerActivity() {
         super.initAudioPlayerContainerActivity()
-        if (!AndroidDevices.isChromeBook && !AndroidDevices.isAndroidTv
+        if (!AndroidDevices.isChromeBook
                 && Settings.getInstance(this).getBoolean("enable_casting", true)) {
             PlaybackService.renderer.observe(this, Observer {
-                val item = toolbar.menu.findItem(R.id.ml_menu_renderers) ?: return@Observer
+                val item = toolbar.menu.findItem(R.id.ml_menu_renderers) ?: return@Observer//======================================
                 item.isVisible = showRenderers
                 item.setIcon(if (!PlaybackService.hasRenderer()) R.drawable.ic_am_renderer else R.drawable.ic_am_renderer_on)
             })
@@ -78,11 +79,11 @@ open class ContentActivity : AudioPlayerContainerActivity(), SearchView.OnQueryT
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        if (AndroidDevices.isAndroidTv) return false
         val current = currentFragment
         super.onCreateOptionsMenu(menu)
         if (current is AboutFragment) return true
         menuInflater.inflate(R.menu.activity_option, menu)
+        Toast.makeText(this, "${if(current is ExtensionBrowser){"ExtensionBrowser"}else if(current is Filterable){"Filterable"} else{"nothing"}}", Toast.LENGTH_SHORT).show()
         if (current is ExtensionBrowser) {
             menu.findItem(R.id.ml_menu_last_playlist).isVisible = false
             menu.findItem(R.id.ml_menu_sortby).isVisible = false
@@ -110,7 +111,6 @@ open class ContentActivity : AudioPlayerContainerActivity(), SearchView.OnQueryT
         return true
     }
 
- 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.ml_menu_search -> {
@@ -210,6 +210,6 @@ open class ContentActivity : AudioPlayerContainerActivity(), SearchView.OnQueryT
     }
 
     companion object {
-        const val TAG = "VLC/ContentActivity"
+        const val TAG = "MPlayer/ContentActivity"
     }
 }

@@ -116,7 +116,7 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-       // menu.findItem(R.id.ml_menu_last_playlist).isVisible = settings.contains(KEY_MEDIA_LAST_PLAYLIST)
+        menu.findItem(R.id.ml_menu_last_playlist).isVisible = settings.contains(KEY_MEDIA_LAST_PLAYLIST)
         menu.findItem(R.id.ml_menu_video_group).isVisible = viewModel.group == null && viewModel.folder == null
         /*val displayInCards = settings.getBoolean("video_display_in_cards", true)
         menu.findItem(R.id.ml_menu_display_grid).isVisible = !displayInCards
@@ -130,11 +130,13 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
             R.id.ml_menu_last_playlist -> {
                 MediaUtils.loadlastPlaylist(activity, PLAYLIST_TYPE_VIDEO)
             }
-           /* R.id.ml_menu_display_list, R.id.ml_menu_display_grid -> {
-                val displayInCards = settings.getBoolean(KEY_VIDEOS_CARDS, true)
-                settings.putSingle(KEY_VIDEOS_CARDS, !displayInCards)
-                (activity as ContentActivity).forceLoadVideoFragment()
-            }*/
+            /*
+
+            R.id.ml_menu_display_list, R.id.ml_menu_display_grid -> {
+                 val displayInCards = settings.getBoolean(KEY_VIDEOS_CARDS, true)
+                 settings.putSingle(KEY_VIDEOS_CARDS, !displayInCards)
+                 (activity as ContentActivity).forceLoadVideoFragment()
+             }*/
             R.id.video_min_group_length_disable -> {
                 settings.putSingle(KEY_GROUP_VIDEOS, GROUP_VIDEOS_NONE)
                 changeGroupingType(VideoGroupingType.NONE)

@@ -23,12 +23,10 @@ package org.videolan.vlc.viewmodels.mobile
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import org.videolan.medialibrary.media.MediaLibraryItem
 import org.videolan.tools.Settings
-import org.videolan.vlc.gui.PlaylistFragment
 import org.videolan.vlc.providers.medialibrary.MedialibraryProvider
 import org.videolan.vlc.providers.medialibrary.PlaylistsProvider
 import org.videolan.vlc.viewmodels.MedialibraryViewModel
@@ -55,6 +53,3 @@ class PlaylistsViewModel(context: Context) : MedialibraryViewModel(context) {
     }
 }
 
-@ExperimentalCoroutinesApi
-@ObsoleteCoroutinesApi
-internal fun PlaylistFragment.getViewModel() = ViewModelProviders.of(requireActivity(), PlaylistsViewModel.Factory(requireContext())).get(PlaylistsViewModel::class.java)

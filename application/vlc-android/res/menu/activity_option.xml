@@ -3,7 +3,7 @@
       xmlns:vlc="http://schemas.android.com/apk/res-auto">
 
     <item
-            android:orderInCategory="1"
+            android:orderInCategory="2"
             android:id="@+id/ml_menu_renderers"
             android:icon="@drawable/ic_am_renderer"
             android:title="@string/cast_option_title"
@@ -11,47 +11,36 @@
             android:visible="false"/>
 
     <item
-            android:orderInCategory="1"
+            android:orderInCategory="2"
             android:id="@+id/ml_menu_filter"
             android:icon="@drawable/ic_menu_search_w"
             vlc:actionViewClass="androidx.appcompat.widget.SearchView"
             android:title="@string/searchable_hint"
             vlc:showAsAction="always|collapseActionView"/>
+    <!--2-->
     <item
-            android:orderInCategory="2"
+            android:orderInCategory="1"
             android:id="@+id/ml_menu_last_playlist"
             android:icon="@drawable/ic_menu_lastplaylist"
             android:title="@string/resume_playback_short_title"
-            vlc:showAsAction="ifRoom|collapseActionView"
+            vlc:showAsAction="never|collapseActionView"
             android:visible="false"/>
-    <item
-            android:orderInCategory="3"
-            android:id="@+id/ml_menu_display_list"
-            android:title="@string/display_in_list"
-            vlc:showAsAction="ifRoom|collapseActionView"
-            android:icon="@drawable/ic_view_list"
-            android:visible="false"/>
-    <item
-            android:orderInCategory="3"
-            android:id="@+id/ml_menu_display_grid"
-            android:title="@string/display_in_grid"
-            vlc:showAsAction="ifRoom|collapseActionView"
-            android:icon="@drawable/ic_view_grid"
-            android:visible="false"/>
+
     <item
             android:orderInCategory="3"
             android:id="@+id/ml_menu_scan"
             android:title="@string/add_to_scanned"
-            vlc:showAsAction="ifRoom|collapseActionView"
+            vlc:showAsAction="never|collapseActionView"
             android:icon="@drawable/ic_menu_addtoscan"
             android:visible="false" />
+    <!--2-->
     <item
-            android:orderInCategory="2"
+            android:orderInCategory="1"
             android:title="@string/sortby"
             android:icon="@drawable/ic_menu_sort"
             android:contentDescription="@string/sortby"
             android:id="@+id/ml_menu_sortby"
-            vlc:showAsAction="ifRoom|collapseActionView"
+            vlc:showAsAction="never|collapseActionView"
             android:visible="false">
         <menu>
             <item
@@ -178,7 +167,7 @@
             android:title="@string/rename_group"
             android:icon="@drawable/ic_edit_toolbar"
             android:visible="false"
-            vlc:showAsAction="ifRoom"
+            vlc:showAsAction="never"
             android:id="@+id/rename_group" />
 
     <item
@@ -186,6 +175,6 @@
             android:title="@string/ungroup"
             android:icon="@drawable/ic_delete_toolbar"
             android:visible="false"
-            vlc:showAsAction="ifRoom"
+            vlc:showAsAction="never"
             android:id="@+id/ungroup" />
 </menu>

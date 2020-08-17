@@ -113,7 +113,7 @@ class Navigator : BottomNavigationView.OnNavigationItemSelectedListener, Lifecyc
         return when (id) {
             R.id.nav_audio -> AudioBrowserFragment()
             R.id.nav_directories -> MainBrowserFragment()
-            R.id.nav_playlists -> PlaylistFragment()
+/*            R.id.nav_playlists -> PlaylistFragment()*/
             R.id.nav_network -> NetworkBrowserFragment()
             R.id.nav_more -> MoreFragment()
             else -> VideoGridFragment()
@@ -167,7 +167,7 @@ class Navigator : BottomNavigationView.OnNavigationItemSelectedListener, Lifecyc
     private fun getTag(id: Int) = when (id) {
         R.id.nav_settings -> ID_PREFERENCES
         R.id.nav_audio -> ID_AUDIO
-        R.id.nav_playlists -> ID_PLAYLISTS
+       /* R.id.nav_playlists -> ID_PLAYLISTS*/
         R.id.nav_directories -> ID_DIRECTORIES
         R.id.nav_history -> ID_HISTORY
         R.id.nav_mrl -> ID_MRL
