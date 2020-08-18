@@ -29,7 +29,8 @@
             app:layout_anchor="@+id/navigation"
             app:layout_anchorGravity="top"
             android:layout_gravity="top"
-            android:layout="@layout/scan_progress" />
+            android:layout="@layout/scan_progress"
+        />
 
     <include layout="@layout/audioplayercontainer" />
 
@@ -42,7 +43,6 @@
             app:layout_dodgeInsetEdges="bottom"
             app:srcCompat="@drawable/ic_fab_add"
             android:tint="@color/grey50"
-            android:visibility="invisible"
             app:borderWidth="0dp"
             app:layout_anchor="@+id/navigation"
             app:layout_anchorGravity="top|end"
@@ -52,6 +52,7 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/navigation"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

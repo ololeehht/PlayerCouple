@@ -45,9 +45,7 @@ private const val TAG = "MPlayer/MainActivity"
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
-class MainActivity : ContentActivity(),
-        ExtensionManagerService.ExtensionManagerActivity,
-        INavigator by Navigator()
+class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerActivity,INavigator by Navigator()
 {
     var refreshing: Boolean = false
         set(value) {
@@ -64,14 +62,14 @@ class MainActivity : ContentActivity(),
         /*** Start initializing the UI  */
         setContentView(R.layout.main)
         initAudioPlayerContainerActivity()
-        setupNavigation(savedInstanceState)
+        setupNavigation(savedInstanceState)//======================================================================================================
         if (savedInstanceState == null) Permissions.checkReadStoragePermission(this)
 
         /* Set up the action bar */
         prepareActionBar()
         /* Reload the latest preferences */
         scanNeeded = savedInstanceState == null && settings.getBoolean(KEY_MEDIALIBRARY_AUTO_RESCAN, true)
-        if (BuildConfig.DEBUG) extensionsManager = ExtensionsManager.getInstance()
+        if (BuildConfig.DEBUG) extensionsManager = ExtensionsManager.getInstance()//====================================================================================================
         mediaLibrary = Medialibrary.getInstance()
 
         val color = TypedValue().run {
@@ -79,7 +77,6 @@ class MainActivity : ContentActivity(),
             data
         }
         mainLoadingProgress.indeterminateDrawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN)
-    
     }
 
 
@@ -110,14 +107,14 @@ class MainActivity : ContentActivity(),
     override fun onSaveInstanceState(outState: Bundle) {
         val current = currentFragment
         if (current !is ExtensionBrowser) supportFragmentManager.putFragment(outState, "current_fragment", current!!)
-        outState.putInt(EXTRA_TARGET, currentFragmentId)
+        outState.putInt(EXTRA_TARGET, currentFragmentId)//===============================================================================================
         super.onSaveInstanceState(outState)
     }
 
     override fun onRestart() {
         super.onRestart()
         /* Reload the latest preferences */
-        reloadPreferences()
+        reloadPreferences()//=========================================================================================================
     }
 
     @TargetApi(Build.VERSION_CODES.N)

@@ -142,14 +142,6 @@ class Navigator : BottomNavigationView.OnNavigationItemSelectedListener, Lifecyc
         currentFragmentId = id
     }
 
-    private fun showSecondaryFragment(fragmentTag: String, param: String? = null) {
-        val i = Intent(activity, SecondaryActivity::class.java)
-        i.putExtra("fragment", fragmentTag)
-        param?.let { i.putExtra("param", it) }
-        activity.startActivityForResult(i, SecondaryActivity.ACTIVITY_RESULT_SECONDARY)
-        // Slide down the audio player if needed.
-        activity.slideDownAudioPlayer()
-    }
 
     override fun currentIdIsExtension() = idIsExtension(currentFragmentId)
 
