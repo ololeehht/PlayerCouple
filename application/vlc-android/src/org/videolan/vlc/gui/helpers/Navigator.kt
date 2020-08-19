@@ -120,7 +120,7 @@ class Navigator : BottomNavigationView.OnNavigationItemSelectedListener, Lifecyc
         }
     }
 
-    private fun showFragment(id: Int) {
+    public override fun showFragment(id: Int) {
         val tag = getTag(id)
         val fragment = getNewFragment(id)
         showFragment(fragment, id, tag)
@@ -311,4 +311,5 @@ interface INavigator {
     fun displayExtensionItems(extensionId: Int, title: String, items: List<VLCExtensionItem>, showParams: Boolean, refresh: Boolean)
     fun reloadPreferences()
     fun forceLoadVideoFragment()
+    fun showFragment(id:Int)
 }

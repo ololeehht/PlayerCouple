@@ -80,7 +80,7 @@ open class AudioPlayerContainerActivity : BaseActivity() {
 
     private var bottomBar: BottomNavigationView? = null
     lateinit var appBarLayout: AppBarLayout
-    protected lateinit var toolbar: Toolbar
+    public lateinit var toolbar: Toolbar
     private var tabLayout: TabLayout? = null
     protected lateinit var audioPlayer: AudioPlayer
     private lateinit var audioPlayerContainer: FrameLayout

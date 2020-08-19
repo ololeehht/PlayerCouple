@@ -25,12 +25,21 @@ package org.videolan.vlc.gui.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.MotionEvent
+import android.view.ViewConfiguration
+import android.view.ViewStub
 import android.view.WindowManager
 import androidx.core.content.getSystemService
+import androidx.core.view.MotionEventCompat
+import androidx.core.view.ViewConfigurationCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.qh.mplayer.utils.LogUtils
+import kotlin.math.abs
+import kotlin.properties.Delegates
 
 class AutoFitRecyclerView : RecyclerView {
+
 
     private var gridLayoutManager: GridLayoutManager? = null
     var columnWidth = -1
@@ -58,6 +67,7 @@ class AutoFitRecyclerView : RecyclerView {
 
         gridLayoutManager = GridLayoutManager(getContext(), 1)
         layoutManager = gridLayoutManager
+        touchSlop=ViewConfiguration.get(context).scaledEdgeSlop
     }
 
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
@@ -89,4 +99,75 @@ class AutoFitRecyclerView : RecyclerView {
     }
 
 
+
+    var lastX =0.0f
+    var lastY =0.0f
+    var touchSlop by Delegates.notNull<Int>()
+
+    override fun setScrollingTouchSlop(slopConstant: Int) {
+        super.setScrollingTouchSlop(slopConstant)
+        var vc=ViewConfiguration.get(context)
+        when(slopConstant)
+        {
+            TOUCH_SLOP_DEFAULT->touchSlop=vc.scaledTouchSlop
+            TOUCH_SLOP_PAGING->touchSlop=ViewConfigurationCompat.getScaledPagingTouchSlop(vc)
+        }
+    }
+
+    override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
+        if (e==null) return false
+
+        var intercept=false;
+        when(e?.action)
+        {
+            MotionEvent.ACTION_DOWN->{
+                lastX=e.x
+                lastY=e.y
+                return super.onInterceptTouchEvent(e)
+            }
+            MotionEvent.ACTION_MOVE->{
+              if(scrollState!= SCROLL_STATE_DRAGGING){
+                  val dx=x-lastX
+                  val dy=y-lastY
+                  var startScroll=false
+                  if(Math.abs(dx)>touchSlop&&Math.abs(dx)>Math.abs(dy)){//layoutManager?.canScrollHorizontally()!! &&
+                      //水平滑动
+                      LogUtils.loge("=======水平滑动")
+                      startScroll=true
+                      if(dx>0)//向右面滑动
+                      {
+                          onSlideListener!!.rightSlide()
+                      }
+                      else{
+                          onSlideListener!!.leftSlide()
+                      }
+                  }
+                  if(layoutManager?.canScrollVertically()!!&&Math.abs(dy)>touchSlop&&Math.abs(dx)<Math.abs(dy))
+                  {
+                      //竖直方向的滑动
+                      LogUtils.loge("=======竖直方向的滑动")
+                      startScroll=true
+                  }
+                  return startScroll&&super.onInterceptTouchEvent(e)
+              }
+                return super.onInterceptTouchEvent(e)
+            }
+            else->super.onInterceptTouchEvent(e)
+        }
+        return intercept
+    }
+
+
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        return super.dispatchTouchEvent(ev)
+    }
+
+
+    public interface OnSlideListener{
+        fun leftSlide():Unit
+        fun rightSlide():Unit
+    }
+
+    public  var onSlideListener:OnSlideListener?=null
 }

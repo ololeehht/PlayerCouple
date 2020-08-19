@@ -83,7 +83,7 @@ open class ContentActivity : AudioPlayerContainerActivity(), SearchView.OnQueryT
         super.onCreateOptionsMenu(menu)
         if (current is AboutFragment) return true
         menuInflater.inflate(R.menu.activity_option, menu)
-        Toast.makeText(this, "${if(current is ExtensionBrowser){"ExtensionBrowser"}else if(current is Filterable){"Filterable"} else{"nothing"}}", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "${if(current is ExtensionBrowser){"ExtensionBrowser"}else if(current is Filterable){"Filterable"} else{"nothing"}}", Toast.LENGTH_SHORT).show()
         if (current is ExtensionBrowser) {
             menu.findItem(R.id.ml_menu_last_playlist).isVisible = false
             menu.findItem(R.id.ml_menu_sortby).isVisible = false

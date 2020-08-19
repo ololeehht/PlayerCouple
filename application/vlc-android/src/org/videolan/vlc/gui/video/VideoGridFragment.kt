@@ -2,17 +2,23 @@ package org.videolan.vlc.gui.video
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.get
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.tabs.TabLayout
 import com.qh.mplayer.utils.LogUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.onEach
@@ -27,6 +33,7 @@ import org.videolan.tools.*
 import org.videolan.vlc.R
 import org.videolan.vlc.databinding.VideoGridBinding
 import org.videolan.vlc.gui.ContentActivity
+import org.videolan.vlc.gui.MainActivity
 import org.videolan.vlc.gui.SecondaryActivity
 import org.videolan.vlc.gui.browser.MediaBrowserFragment
 import org.videolan.vlc.gui.dialogs.*
@@ -34,6 +41,7 @@ import org.videolan.vlc.gui.helpers.ItemOffsetDecoration
 import org.videolan.vlc.gui.helpers.UiTools
 import org.videolan.vlc.gui.helpers.UiTools.addToGroup
 import org.videolan.vlc.gui.helpers.UiTools.addToPlaylist
+import org.videolan.vlc.gui.view.AutoFitRecyclerView
 import org.videolan.vlc.gui.view.EmptyLoadingState
 import org.videolan.vlc.media.MediaUtils
 import org.videolan.vlc.media.PlaylistManager
@@ -70,6 +78,7 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        LogUtils.loge("+++++++++++VideoFragment   oncreate")
         super.onCreate(savedInstanceState)
         if (!::settings.isInitialized) settings = Settings.getInstance(requireContext())
         if (!::videoListAdapter.isInitialized) {
@@ -91,6 +100,7 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
             Medialibrary.lastThumb.observe(this, thumbObs)
             videoListAdapter.events.onEach { it.process() }.launchWhenStarted(lifecycleScope)
         }
+
     }
 
     private fun setDataObservers() {
@@ -117,7 +127,7 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         menu.findItem(R.id.ml_menu_last_playlist).isVisible = settings.contains(KEY_MEDIA_LAST_PLAYLIST)
-        menu.findItem(R.id.ml_menu_video_group).isVisible = viewModel.group == null && viewModel.folder == null
+        //menu.findItem(R.id.ml_menu_video_group).isVisible = viewModel.group == null && viewModel.folder == null
         /*val displayInCards = settings.getBoolean("video_display_in_cards", true)
         menu.findItem(R.id.ml_menu_display_grid).isVisible = !displayInCards
         menu.findItem(R.id.ml_menu_display_list).isVisible = displayInCards*/
@@ -136,8 +146,8 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
                  val displayInCards = settings.getBoolean(KEY_VIDEOS_CARDS, true)
                  settings.putSingle(KEY_VIDEOS_CARDS, !displayInCards)
                  (activity as ContentActivity).forceLoadVideoFragment()
-             }*/
-            R.id.video_min_group_length_disable -> {
+             }
+              R.id.video_min_group_length_disable -> {
                 settings.putSingle(KEY_GROUP_VIDEOS, GROUP_VIDEOS_NONE)
                 changeGroupingType(VideoGroupingType.NONE)
             }
@@ -149,6 +159,8 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
                 settings.putSingle(KEY_GROUP_VIDEOS, GROUP_VIDEOS_NAME)
                 changeGroupingType(VideoGroupingType.NAME)
             }
+             */
+
             R.id.rename_group -> {
                 viewModel.group?.let { renameGroup(it) }
             }
@@ -177,11 +189,19 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        LogUtils.loge("+++++++++++VideoFragment   onCreateView")
         binding = VideoGridBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+
+
+
+
+    lateinit var videoTabName:TabLayout.Tab
+    lateinit var videoTabDirectory:TabLayout.Tab
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        LogUtils.loge("+++++++++++VideoFragment   onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         val empty = viewModel.isEmpty()
         binding.emptyLoading.state = if (empty) EmptyLoadingState.LOADING else EmptyLoadingState.NONE
@@ -189,6 +209,52 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
         binding.emptyLoading.setOnNoMediaClickListener {
             requireActivity().setResult(RESULT_RESTART)
         }
+
+        binding.videoGrid.onSlideListener=object :AutoFitRecyclerView.OnSlideListener{
+            override fun leftSlide() {
+                //changeGroupingType(VideoGroupingType.NAME)
+            }
+
+            override fun rightSlide() {
+                //changeGroupingType(VideoGroupingType.FOLDER)
+            }
+        }
+        if(activity is SecondaryActivity)
+        {
+            binding.videoTab.visibility=View.GONE
+        }
+        else{
+            videoTabName=binding.videoTab.newTab()
+            videoTabDirectory=binding.videoTab.newTab()
+            videoTabName.setText("video")
+            videoTabDirectory.setText("folders")
+            binding.videoTab.addTab(videoTabName)
+            binding.videoTab.addTab(videoTabDirectory)
+            binding.videoTab.addOnTabSelectedListener( object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    // Toast.makeText(this@VideoGridFragment.requireContext(), "${tab.text} clicked ", Toast.LENGTH_SHORT).show()
+                    when(tab.text)
+                    {
+                        "video"->{changeGroupingType(VideoGroupingType.NAME)
+                        if(activity is MainActivity)
+                        {
+                            (activity as MainActivity).toolbarTitle.text="VIDEO"
+                        }
+                        }
+                        "folders"->{changeGroupingType(VideoGroupingType.FOLDER)
+                            if(activity is MainActivity)
+                            {
+                                (activity as MainActivity).toolbarTitle.text="FOLDERS"
+                            }
+                        }
+                    }
+                }
+                override fun onTabUnselected(tab: TabLayout.Tab) {}
+                override fun onTabReselected(tab: TabLayout.Tab) {}
+            })
+
+        }
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -198,7 +264,12 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
     }
 
     override fun onStart() {
+        LogUtils.loge("+++++++++++VideoFragment   onStart")
         super.onStart()
+        if(activity is MainActivity)
+        {
+            if((activity as MainActivity).isVideoByName)videoTabName.select()else videoTabDirectory.select()
+        }
         registerForContextMenu(binding.videoGrid)
         updateViewMode()
         setFabPlayVisibility(true)
@@ -207,11 +278,14 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
     }
 
     override fun onStop() {
+        LogUtils.loge("+++++++++++VideoFragment   onStop")
+        if(activity is MainActivity){(activity as MainActivity).isVideoByName=videoTabName.isSelected}
         super.onStop()
         unregisterForContextMenu(binding.videoGrid)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        LogUtils.loge("==========onSaveInstanceState${outState}")
         super.onSaveInstanceState(outState)
         outState.putParcelable(KEY_FOLDER, viewModel.folder)
         outState.putParcelable(KEY_GROUP, viewModel.group)
@@ -219,6 +293,7 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
     }
 
     override fun onDestroy() {
+        LogUtils.loge("+++++++++++VideoFragment   onDestory")
         super.onDestroy()
         videoListAdapter.release()
         gridItemDecoration = null

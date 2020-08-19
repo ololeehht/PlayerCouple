@@ -29,6 +29,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -64,6 +65,7 @@ class SecondaryActivity : ContentActivity() {
     override val displayTitle = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Toast.makeText(this, "SecondaryActivity create", Toast.LENGTH_SHORT).show()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.secondary)
         initAudioPlayerContainerActivity()

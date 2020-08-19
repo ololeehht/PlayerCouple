@@ -33,7 +33,6 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         if (displayTitle) {
-            findViewById<View>(R.id.toolbar_icon).setGone()
             findViewById<View>(R.id.toolbar_vlc_title).setGone()
         }
     }

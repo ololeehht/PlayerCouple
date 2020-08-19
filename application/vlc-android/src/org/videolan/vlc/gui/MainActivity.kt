@@ -2,16 +2,25 @@ package org.videolan.vlc.gui
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.app.ActionBar
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
+import android.widget.Toolbar
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.view.ActionMode
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import com.google.android.material.navigation.NavigationView
+import com.qh.mplayer.utils.LogUtils
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -30,6 +39,8 @@ import org.videolan.vlc.extensions.ExtensionsManager
 import org.videolan.vlc.gui.audio.AudioBrowserFragment
 import org.videolan.vlc.gui.browser.BaseBrowserFragment
 import org.videolan.vlc.gui.browser.ExtensionBrowser
+import org.videolan.vlc.gui.browser.MainBrowserFragment
+import org.videolan.vlc.gui.browser.NetworkBrowserFragment
 import org.videolan.vlc.gui.helpers.INavigator
 import org.videolan.vlc.gui.helpers.Navigator
 import org.videolan.vlc.gui.helpers.UiTools
@@ -45,8 +56,12 @@ private const val TAG = "MPlayer/MainActivity"
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
-class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerActivity,INavigator by Navigator()
+class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerActivity,INavigator by Navigator(),NavigationView.OnNavigationItemSelectedListener
 {
+    public lateinit var toolbarTitle:TextView
+    public  var  isVideoByName=true
+    lateinit var drawerLayout:DrawerLayout
+    lateinit var naviMenu:NavigationView
     var refreshing: Boolean = false
         set(value) {
             mainLoading.visibility = if (value) View.VISIBLE else View.GONE
@@ -77,6 +92,22 @@ class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerA
             data
         }
         mainLoadingProgress.indeterminateDrawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN)
+        var subView=findViewById<View>(R.id.appbar)
+        toolbarTitle= subView.findViewById(R.id.toolbar_vlc_title)
+        LogUtils.loge("======$subView")
+        LogUtils.loge("======$title")
+        toolbarTitle.setText("VIDEO")
+        drawerLayout=findViewById<DrawerLayout>(R.id.main_drawer)
+        naviMenu=findViewById<NavigationView>(R.id.menu_drawer)
+        val toggle=ActionBarDrawerToggle(this,
+                drawerLayout,
+                toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        naviMenu.setNavigationItemSelectedListener(this)
     }
 
 
@@ -118,10 +149,7 @@ class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerA
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    override fun onBackPressed() {
-
-
-        /* Close playlist search if open or Slide down the audio player if it is shown entirely. */
+    override fun onBackPressed() {/* Close playlist search if open or Slide down the audio player if it is shown entirely. */
         if (isAudioPlayerReady && (audioPlayer.backPressed() || slideDownAudioPlayer()))
             return
 
@@ -137,6 +165,7 @@ class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerA
             UiTools.confirmExit(this)
             return
         }
+
         finish()
     }
 
@@ -219,4 +248,28 @@ class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerA
         }
         return super.onKeyDown(keyCode, event)
     }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        LogUtils.loge("=========item:.itemId${item.itemId}          fragementId${currentFragment?.id}")
+        if(!isOpeningCurrentFragment(item))
+        {
+            showFragment(item.itemId)
+        }
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    private fun isOpeningCurrentFragment(item:MenuItem):Boolean{
+       var fragmentName=when(item.itemId)
+        {
+            R.id.nav_audio -> "AudioBrowserFragment"
+            R.id.nav_directories -> "MainBrowserFragment"
+            R.id.nav_network -> "NetworkBrowserFragment"
+            R.id.nav_more -> "MoreFragment"
+            else -> "VideoGridFragment"
+        }
+        return fragmentName.equals(currentFragment!!::class.simpleName)
+    }
+
+
 }

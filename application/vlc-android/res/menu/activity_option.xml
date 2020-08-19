@@ -88,7 +88,7 @@
                     android:title="@string/sortby_media_number" />
         </menu>
     </item>
-    <item
+<!--    <item
             android:orderInCategory="2"
             android:title="@string/video_min_group_length_title"
             android:id="@+id/ml_menu_video_group"
@@ -110,7 +110,7 @@
 
 
         </menu>
-    </item>
+    </item>-->
     <item
             android:orderInCategory="3"
             android:title="@string/add_to_playlist"

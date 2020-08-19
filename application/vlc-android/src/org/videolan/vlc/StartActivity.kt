@@ -55,6 +55,7 @@ import videolan.org.commontools.TV_CHANNEL_PATH_APP
 import videolan.org.commontools.TV_CHANNEL_PATH_VIDEO
 import videolan.org.commontools.TV_CHANNEL_QUERY_VIDEO_ID
 import videolan.org.commontools.TV_CHANNEL_SCHEME
+import java.io.File
 
 private const val SEND_CRASH_RESULT = 0
 private const val TAG = "VLC/StartActivity"
