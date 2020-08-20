@@ -96,7 +96,7 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
     fun setup() {
         if (!this::recyclerview.isInitialized || PlayerController.playbackState == PlaybackStateCompat.STATE_STOPPED) return
         val options = mutableListOf<PlayerOption>()
-        if (video) options.add(PlayerOption(ID_LOCK_PLAYER, R.attr.ic_lock_player, res.getString(R.string.lock)))
+        //if (video) options.add(PlayerOption(ID_LOCK_PLAYER, R.attr.ic_lock_player, res.getString(R.string.lock)))
         options.add(PlayerOption(ID_SLEEP, R.attr.ic_sleep_normal_style, res.getString(R.string.sleep_title)))
         if (service.isSeekable) {
             options.add(PlayerOption(ID_PLAYBACK_SPEED, R.attr.ic_speed_normal_style, res.getString(R.string.playback_speed)))
@@ -182,6 +182,11 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
             }
             else -> showFragment(option.id)
         }
+    }
+
+    public fun toogleLockPack(){
+        hide()
+        (activity as VideoPlayerActivity).toggleLock()
     }
 
     private fun showFragment(id: Long) {

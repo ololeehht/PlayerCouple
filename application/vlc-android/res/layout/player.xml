@@ -74,6 +74,7 @@
                 android:layout_height="match_parent"
                 android:layout="@layout/player_tips" />
 
+        <!--MPlayer loading icon-->
         <ImageView
                 android:id="@+id/player_overlay_loading"
                 android:layout_width="80dp"
@@ -117,9 +118,10 @@
 
     </RelativeLayout>
 
+
+    <!--搜索媒体-->
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-
             android:maxWidth="480dp"
             android:layout_centerHorizontal="true"
             android:background="@color/playerbackground"
@@ -195,6 +197,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/view" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!--右侧的操作列表-->
     <androidx.appcompat.widget.ViewStubCompat
             android:id="@+id/player_options_stub"
             android:layout_width="match_parent"

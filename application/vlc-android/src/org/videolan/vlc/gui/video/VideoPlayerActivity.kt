@@ -30,6 +30,7 @@ import android.bluetooth.BluetoothHeadset
 import android.content.*
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.net.Uri
 import android.os.*
@@ -69,8 +70,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import com.qh.mplayer.utils.LogUtils
 import kotlinx.android.synthetic.main.player_overlay_brightness.*
 import kotlinx.android.synthetic.main.player_overlay_volume.*
+import kotlinx.android.synthetic.main.subtitle_downloader_dialog.view.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -169,7 +172,6 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
     val statsDelegate: VideoStatsDelegate by lazy(LazyThreadSafetyMode.NONE) { VideoStatsDelegate(this, { overlayDelegate.showOverlayTimeout(OVERLAY_INFINITE) }, { overlayDelegate.showOverlay(true) }) }
     val delayDelegate: VideoDelayDelegate by lazy(LazyThreadSafetyMode.NONE) { VideoDelayDelegate(this@VideoPlayerActivity) }
     val overlayDelegate: VideoPlayerOverlayDelegate by lazy(LazyThreadSafetyMode.NONE) { VideoPlayerOverlayDelegate(this@VideoPlayerActivity) }
-    var isTv: Boolean = false
 
     // Tracks & Subtitles
     private var audioTracksList: Array<MediaPlayer.TrackDescription>? = null
@@ -368,6 +370,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         return super.getApplicationContext().getContextWithLocale(AppContextProvider.locale)
     }
 
+    @SuppressLint("RestrictedApi")
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -432,11 +435,10 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         overlayDelegate.updateOrientationIcon()
 
         // Extra initialization when no secondary display is detected
-        isTv = Settings.showTvUi
         if (displayManager.isPrimary) {
             // Orientation
             // Tips
-            if (!BuildConfig.DEBUG && !isTv && !settings.getBoolean(PREF_TIPS_SHOWN, false)
+            if (!BuildConfig.DEBUG  && !settings.getBoolean(PREF_TIPS_SHOWN, false)
                     && !isBenchmark) {
                 (findViewById<View>(R.id.player_overlay_tips) as ViewStubCompat).inflate()
                 overlayTips = findViewById(R.id.overlay_tips_layout)
@@ -445,19 +447,16 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
 
 
         medialibrary = Medialibrary.getInstance()
-        val touch = if (!isTv) {
-            val audioTouch = (!AndroidUtil.isLolliPopOrLater || !audiomanager.isVolumeFixed) && settings.getBoolean(ENABLE_VOLUME_GESTURE, true)
-            val brightnessTouch = !AndroidDevices.isChromeBook && settings.getBoolean(ENABLE_BRIGHTNESS_GESTURE, true)
-            ((if (audioTouch) TOUCH_FLAG_AUDIO_VOLUME else 0)
-                    + (if (brightnessTouch) TOUCH_FLAG_BRIGHTNESS else 0)
-                    + if (settings.getBoolean(ENABLE_DOUBLE_TAP_SEEK, true)) TOUCH_FLAG_SEEK else 0)
-        } else 0
+        val audioTouch = (!AndroidUtil.isLolliPopOrLater || !audiomanager.isVolumeFixed) && settings.getBoolean(ENABLE_VOLUME_GESTURE, true)
+        val brightnessTouch = !AndroidDevices.isChromeBook && settings.getBoolean(ENABLE_BRIGHTNESS_GESTURE, true)
+        val touch = ((if (audioTouch) TOUCH_FLAG_AUDIO_VOLUME else 0)
+                    + (if (brightnessTouch) TOUCH_FLAG_BRIGHTNESS else 0) + if (settings.getBoolean(ENABLE_DOUBLE_TAP_SEEK, true)) TOUCH_FLAG_SEEK else 0)
         val dm = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(dm)
         val yRange = dm.widthPixels.coerceAtMost(dm.heightPixels)
         val xRange = dm.widthPixels.coerceAtLeast(dm.heightPixels)
         val sc = ScreenConfig(dm, xRange, yRange, resources.configuration.orientation)
-        touchDelegate = VideoTouchDelegate(this, touch, sc, isTv)
+        touchDelegate = VideoTouchDelegate(this, touch!!, sc, false)
         UiTools.setRotationAnimation(this)
         if (savedInstanceState != null) {
             savedTime = savedInstanceState.getLong(KEY_TIME)
@@ -472,6 +471,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         overlayDelegate.playToPause = AnimatedVectorDrawableCompat.create(this, R.drawable.anim_play_pause_video)!!
         overlayDelegate.pauseToPlay = AnimatedVectorDrawableCompat.create(this, R.drawable.anim_pause_play_video)!!
         overlayDelegate.vibrator = getSystemService<Vibrator>()!!
+
     }
 
     override fun afterTextChanged(s: Editable?) {
@@ -874,7 +874,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
             overlayDelegate.togglePlaylist()
         } else if (isPlaybackSettingActive) {
             delayDelegate.endPlaybackSetting()
-        } else if (isTv && isShowing && !isLocked) {
+        } else if ( isShowing && !isLocked) {
             overlayDelegate.hideOverlay(true)
         } else {
             exitOK()
@@ -1321,7 +1321,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         // Show the MainActivity if it is not in background.
         if (showUI) {
             val i = Intent().apply {
-                setClassName(applicationContext, if (isTv) TV_AUDIOPLAYER_ACTIVITY else MOBILE_MAIN_ACTIVITY)
+                setClassName(applicationContext, MOBILE_MAIN_ACTIVITY)
             }
             startActivity(i)
         }
@@ -1467,7 +1467,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
     override fun onClick(v: View) {
         when (v.id) {
             R.id.orientation_toggle -> toggleOrientation()
-            R.id.playlist_toggle -> overlayDelegate.togglePlaylist()
+
             R.id.player_overlay_forward -> touchDelegate.seekDelta(10000)
             R.id.player_overlay_rewind -> touchDelegate.seekDelta(-10000)
             R.id.ab_repeat_add_marker -> service?.playlistManager?.setABRepeatValue(overlayDelegate.hudBinding.playerOverlaySeekbar.progress.toLong())
@@ -1481,6 +1481,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
                 clone = displayManager.isSecondary
                 recreate()
             }
+//             R.id.playlist_toggle -> overlayDelegate.togglePlaylist()
         }
     }
 
@@ -2015,6 +2016,31 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         overlayDelegate.updateOrientationIcon()
     }
 
+    /*锁定播放器*/
+    fun lockVideoPlayer(v:View){
+        (v as ImageView).setImageResource(if(isLocked)R.drawable.ic_lock_player else R.drawable.ic_locked_player)
+        hideOptions()
+        toggleLock()
+        overlayDelegate.showInfo(if(isLocked)R.string.locked else R.string.unlocked, 500)
+        LogUtils.loge("### lock  is locked:$isLocked")
+    }
+
+    /*
+    * 加载播放列表
+    * */
+    fun loadPlayList(){
+        overlayDelegate.togglePlaylist()
+        LogUtils.loge("### playlist")
+    }
+
+    /*
+    * 播放声音
+    * */
+    fun playAudio(){
+        switchToAudioMode(true)
+        LogUtils.loge("### play audio")
+    }
+
     private fun toggleBtDelay(connected: Boolean) {
         service?.setAudioDelay(if (connected) settings.getLong(KEY_BLUETOOTH_DELAY, 0) else 0L)
     }
@@ -2195,6 +2221,8 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
             return intent
         }
     }
+
+
 }
 
 data class PlayerOrientationMode (

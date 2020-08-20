@@ -193,7 +193,7 @@ class SwipeToUnlockView : ConstraintLayout {
     }
 
     private fun initialize() {
-        LayoutInflater.from(context).inflate(R.layout.swipe_to_unlock, this, true)
+        //LayoutInflater.from(context).inflate(R.layout.swipe_to_unlock, this, true)
         guideline = findViewById(R.id.swipe_guideline)
         swipeIcon = findViewById(R.id.swipe_icon)
         swipeText = findViewById(R.id.swipe_text)

@@ -72,7 +72,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
                 app:srcCompat="@drawable/ic_player_playlist"
-                tools:visibility="visible" />
+                tools:visibility="gone" />
 
         <ImageView
                 android:id="@+id/video_secondary_display"

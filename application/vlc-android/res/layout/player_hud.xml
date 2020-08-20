@@ -33,6 +33,7 @@
             tools:theme="@style/Theme.VLC.Player"
             tools:visibility="visible">
 
+        <!--视频信息布局-->
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/stats_container"
                 android:layout_width="0dp"
@@ -126,6 +127,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+        <!---->
         <include
                 android:id="@+id/ab_repeat_container"
                 layout="@layout/ab_repeat_controls"
@@ -172,6 +174,7 @@
                 vlc:layout_constraintTop_toBottomOf="@+id/player_overlay_title"
                 vlc:srcCompat="@drawable/ic_abrepeat_reset_circle" />
 
+        <!--媒体控制按钮-->
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout2"
                 android:layout_width="match_parent"
@@ -491,17 +494,94 @@
                     vlc:layout_constraintTop_toTopOf="@+id/player_overlay_play"
                     vlc:srcCompat="@drawable/ic_player_more" />
 
-            <org.videolan.vlc.gui.view.SwipeToUnlockView
-                    android:id="@+id/swipe_to_unlock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"
-                    vlc:layout_constraintBottom_toBottomOf="parent"
-                    vlc:layout_constraintEnd_toEndOf="parent"
-                    vlc:layout_constraintStart_toStartOf="parent"
-                    vlc:layout_constraintTop_toBottomOf="@id/player_overlay_seekbar" />
+           <!-- <org.videolan.vlc.gui.view.SwipeToUnlockView
+                android:id="@+id/swipe_to_unlock"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                vlc:layout_constraintBottom_toBottomOf="parent"
+                vlc:layout_constraintEnd_toEndOf="parent"
+                vlc:layout_constraintStart_toStartOf="parent"
+                vlc:layout_constraintTop_toBottomOf="@id/player_overlay_seekbar" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--左侧按钮父布局-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            vlc:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:orientation="vertical">
+            <!--锁定-->
+            <ImageView
+                android:id="@+id/video_player_lock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                vlc:srcCompat='@drawable/ic_lock_player'
+                android:background="@drawable/ic_circle_button"
+                android:layout_marginBottom="5dp"
+                android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"
+                android:visibility="visible"
+                tools:visibility="visible"
+                android:onClick="@{(v) -> player.lockVideoPlayer(v)}"/>
+            <!--更多-->
+            <ImageView
+                android:id="@+id/video_player_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                vlc:srcCompat="@drawable/ic_more_landscape"
+                android:background="@drawable/ic_circle_button"
+                android:layout_marginTop="5dp"
+                android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"
+                android:visibility="visible"
+                tools:visibility="visible"
+                android:onClick="@{(v) -> player.showAdvancedOptions()}"/>
+        </LinearLayout>
+
+        <!--右侧按钮父布局-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            vlc:layout_constraintRight_toRightOf="parent"
+            android:gravity="center"
+            android:orientation="vertical">
+            <!--播放列表-->
+            <ImageView
+                android:id="@+id/video_player_playlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                vlc:srcCompat="@drawable/ic_small_playlist"
+                android:background="@drawable/ic_circle_button"
+                android:layout_marginBottom="5dp"
+                android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"
+                android:visibility="visible"
+                tools:visibility="visible"
+                android:onClick="@{(v) -> player.loadPlayList()}"/>
+            <!--音频播放-->
+            <ImageView
+                android:id="@+id/video_player_playaudio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                vlc:srcCompat="@drawable/ic_audio_icon"
+                android:background="@drawable/ic_circle_button"
+                android:layout_marginTop="5dp"
+                android:scaleType="fitCenter"
+                android:focusable="true"
+                android:clickable="true"
+                android:visibility="visible"
+                tools:visibility="visible"
+                android:onClick="@{(v) -> player.playAudio()}"/>
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Media control buttons -->

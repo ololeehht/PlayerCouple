@@ -747,4 +747,6 @@
     <string name="donate_again">Sponsor the app again</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="locked">Locked</string>
+    <string name="unlocked">UnLocked</string>
 </resources>

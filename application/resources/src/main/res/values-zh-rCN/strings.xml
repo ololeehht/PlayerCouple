@@ -699,4 +699,6 @@
     <string name="swipe_unlock_no_touch">长按解锁</string>
     <string name="navigation_drawer_open">打开导航抽屉</string>
     <string name="navigation_drawer_close">关闭导航抽屉</string>
+    <string name="locked">锁定</string>
+    <string name="unlocked">解锁</string>
 </resources>

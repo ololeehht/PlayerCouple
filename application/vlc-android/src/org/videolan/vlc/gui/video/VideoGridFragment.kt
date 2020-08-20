@@ -435,7 +435,7 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
             VideoGroupingType.NAME -> {
                 val selection = multiSelectHelper.getSelection()
                 when (item.itemId) {
-                    R.id.action_videogroup_play -> MediaUtils.openList(activity, selection.getAll(), 0)
+                    R.id.action_videogroup_play -> MediaUtils.openList(activity, selection.getAll(), 0)//=======================================================================
                     R.id.action_videogroup_append -> MediaUtils.appendMedia(activity, selection.getAll())
                     R.id.action_videogroup_add_playlist -> lifecycleScope.launch { requireActivity().addToPlaylist(withContext(Dispatchers.Default) { selection.getAll() }) }
                     R.id.action_group_similar -> lifecycleScope.launch { viewModel.groupSimilar(selection.getAll().first()) }
