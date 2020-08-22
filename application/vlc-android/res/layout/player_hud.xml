@@ -299,7 +299,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ImageView
+         <!--   <ImageView
                     android:id="@+id/player_overlay_tracks"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -317,7 +317,7 @@
                     vlc:layout_constraintHorizontal_chainStyle="spread_inside"
                     vlc:layout_constraintStart_toStartOf="parent"
                     vlc:layout_constraintTop_toTopOf="@+id/player_overlay_play"
-                    vlc:srcCompat="@drawable/ic_player_audiotrack" />
+                    vlc:srcCompat="@drawable/ic_player_audiotrack" />-->
 
             <ImageView
                     android:id="@+id/orientation_toggle"
@@ -333,7 +333,7 @@
                     tools:visibility="visible"
                     vlc:layout_constraintBottom_toBottomOf="@+id/player_overlay_play"
                     vlc:layout_constraintEnd_toStartOf="@+id/player_space_left"
-                    vlc:layout_constraintStart_toEndOf="@+id/player_overlay_tracks"
+                    vlc:layout_constraintStart_toStartOf="parent"
                     vlc:layout_constraintTop_toTopOf="@+id/player_overlay_play"
                     vlc:srcCompat="@drawable/ic_player_rotate" />
 
@@ -470,12 +470,15 @@
                     android:padding="4dp"
                     tools:visibility="visible"
                     vlc:layout_constraintBottom_toBottomOf="@+id/player_overlay_play"
-                    vlc:layout_constraintEnd_toStartOf="@+id/player_overlay_adv_function"
+                    vlc:layout_constraintEnd_toEndOf="parent"
                     vlc:layout_constraintStart_toEndOf="@+id/player_space_right"
                     vlc:layout_constraintTop_toTopOf="@+id/player_overlay_play"
                     vlc:srcCompat="@drawable/ic_player_ratio" />
 
-            <ImageView
+
+
+           <!--
+             <ImageView
                     android:id="@+id/player_overlay_adv_function"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -493,8 +496,7 @@
                     vlc:layout_constraintStart_toEndOf="@+id/player_resize"
                     vlc:layout_constraintTop_toTopOf="@+id/player_overlay_play"
                     vlc:srcCompat="@drawable/ic_player_more" />
-
-           <!-- <org.videolan.vlc.gui.view.SwipeToUnlockView
+           <org.videolan.vlc.gui.view.SwipeToUnlockView
                 android:id="@+id/swipe_to_unlock"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -519,15 +521,15 @@
                 android:id="@+id/video_player_lock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                vlc:srcCompat='@drawable/ic_lock_player'
-                android:background="@drawable/ic_circle_button"
                 android:layout_marginBottom="5dp"
-                android:scaleType="fitCenter"
-                android:focusable="true"
+                android:background="@drawable/ic_circle_button"
                 android:clickable="true"
+                android:focusable="true"
+                android:onClick="@{(v) -> player.lockVideoPlayer(v)}"
+                android:scaleType="fitCenter"
                 android:visibility="visible"
                 tools:visibility="visible"
-                android:onClick="@{(v) -> player.lockVideoPlayer(v)}"/>
+                vlc:srcCompat='@drawable/ic_lock_player' />
             <!--更多-->
             <ImageView
                 android:id="@+id/video_player_more"
@@ -546,40 +548,41 @@
 
         <!--右侧按钮父布局-->
         <LinearLayout
+            android:id="@+id/linearLayout6"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginRight="10dp"
-            vlc:layout_constraintRight_toRightOf="parent"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            vlc:layout_constraintRight_toRightOf="parent">
             <!--播放列表-->
             <ImageView
                 android:id="@+id/video_player_playlist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                vlc:srcCompat="@drawable/ic_small_playlist"
-                android:background="@drawable/ic_circle_button"
                 android:layout_marginBottom="5dp"
-                android:scaleType="fitCenter"
-                android:focusable="true"
+                android:background="@drawable/ic_circle_button"
                 android:clickable="true"
+                android:focusable="true"
+                android:onClick="@{(v) -> player.loadPlayList()}"
+                android:scaleType="fitCenter"
                 android:visibility="visible"
                 tools:visibility="visible"
-                android:onClick="@{(v) -> player.loadPlayList()}"/>
+                vlc:srcCompat="@drawable/ic_small_playlist" />
             <!--音频播放-->
             <ImageView
                 android:id="@+id/video_player_playaudio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                vlc:srcCompat="@drawable/ic_audio_icon"
-                android:background="@drawable/ic_circle_button"
                 android:layout_marginTop="5dp"
-                android:scaleType="fitCenter"
-                android:focusable="true"
+                android:background="@drawable/ic_circle_button"
                 android:clickable="true"
+                android:focusable="true"
+                android:onClick="@{(v) -> player.playAudio()}"
+                android:scaleType="fitCenter"
                 android:visibility="visible"
                 tools:visibility="visible"
-                android:onClick="@{(v) -> player.playAudio()}"/>
+                vlc:srcCompat="@drawable/ic_audio_icon" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

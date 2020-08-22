@@ -941,7 +941,8 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
                 return true
             }
             KeyEvent.KEYCODE_V, KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK, KeyEvent.KEYCODE_BUTTON_X -> {
-                onAudioSubClick(if (overlayDelegate.isHudBindingInitialized()) overlayDelegate.hudBinding.playerOverlayTracks else null)
+                LogUtils.loge("=====isHudRightBindingInitialized:${overlayDelegate.isHudRightBindingInitialized()}")
+                onAudioSubClick(if (overlayDelegate.isHudRightBindingInitialized()) overlayDelegate.hudRightBinding.playerOverlayTracks else null)
                 return true
             }
             KeyEvent.KEYCODE_A -> {
@@ -1440,8 +1441,13 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
     }
 
     open fun onAudioSubClick(anchor: View?) {
+        LogUtils.loge("========overlayDelegate")
         overlayDelegate.showTracks()
         overlayDelegate.hideOverlay(false)
+    }
+
+    fun audioTrackChoose(){
+        LogUtils.loge("========audioTrackChoose")
     }
 
     override fun onPopupMenu(view: View, position: Int, item: MediaWrapper?) {

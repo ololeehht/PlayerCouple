@@ -56,6 +56,7 @@ import org.videolan.vlc.manageAbRepeatStep
 import org.videolan.vlc.media.MediaUtils
 import org.videolan.vlc.util.FileUtils
 import org.videolan.vlc.viewmodels.PlaylistModel
+import java.lang.Exception
 import java.lang.Runnable
 
 @ExperimentalCoroutinesApi
@@ -516,10 +517,10 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             applyMargin(hudBinding.playlistNext, largeMargin.toInt(), false)
             applyMargin(hudBinding.playerOverlayForward, largeMargin.toInt(), false)
 
-            applyMargin(hudBinding.playerOverlayTracks, smallMargin.toInt() , false)
+            applyMargin(hudRightBinding.playerOverlayTracks, smallMargin.toInt() , false)
             applyMargin(hudBinding.orientationToggle, smallMargin.toInt(), false)
             applyMargin(hudBinding.playerResize, smallMargin.toInt(), true)
-            applyMargin(hudBinding.playerOverlayAdvFunction, smallMargin.toInt(), true)
+            //applyMargin(hudBinding.playerOverlayAdvFunction, smallMargin.toInt(), true)
 
             hudBinding.playerOverlaySeekbar.setPadding(overscanHorizontal, 0, overscanHorizontal, 0)
 
@@ -566,11 +567,13 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
                 }
             }
            // hudRightBinding.playlistToggle.setVisible()
+            hudRightBinding.playerOverlayTracks.setVisible()
             if (::hudBinding.isInitialized) {
                 hudBinding.playlistPrevious.setVisible()
                 hudBinding.playlistNext.setVisible()
             }
             //hudRightBinding.playlistToggle.setOnClickListener(player)
+            hudRightBinding.playerOverlayTracks.setOnClickListener(player)
             closeButton.setOnClickListener { togglePlaylist() }
 
             val callback = SwipeDragItemTouchHelperCallback(playlistAdapter, true)
@@ -599,12 +602,15 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
                 hudBinding.playerOverlayRewind.visibility = if (show) View.VISIBLE else View.INVISIBLE
                 hudBinding.playerOverlayForward.visibility = if (show) View.VISIBLE else View.INVISIBLE
             }
-            hudBinding.playerOverlayTracks.visibility = if (show) View.VISIBLE else View.INVISIBLE
-            hudBinding.playerOverlayAdvFunction.visibility = if (show) View.VISIBLE else View.INVISIBLE
+            hudRightBinding.playerOverlayTracks.visibility = if (show) View.VISIBLE else View.INVISIBLE
+            //hudBinding.playerOverlayAdvFunction.visibility = if (show) View.VISIBLE else View.INVISIBLE
             hudBinding.playerResize.visibility = if (show) View.VISIBLE else View.INVISIBLE
             if (hasPlaylist) {
                 hudBinding.playlistPrevious.visibility = if (show) View.VISIBLE else View.INVISIBLE
                 hudBinding.playlistNext.visibility = if (show) View.VISIBLE else View.INVISIBLE
+            }
+            else{
+                hudBinding.videoPlayerPlaylist.visibility =  View.INVISIBLE
             }
             hudBinding.orientationToggle.visibility = if (AndroidDevices.isChromeBook) View.INVISIBLE else if (show) View.VISIBLE else View.INVISIBLE
         }
@@ -613,8 +619,8 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             if (secondary) hudRightBinding.videoSecondaryDisplay.setImageResource(R.drawable.ic_player_screenshare_stop)
             hudRightBinding.videoSecondaryDisplay.visibility = if (!show) View.GONE else if (UiTools.hasSecondaryDisplay(player.applicationContext)) View.VISIBLE else View.GONE
             hudRightBinding.videoSecondaryDisplay.contentDescription = player.resources.getString(if (secondary) R.string.video_remote_disable else R.string.video_remote_enable)
-
-            hudRightBinding.playlistToggle.setGone()/// = if (show && player.service?.hasPlaylist() == true) View.VISIBLE else View.GONE
+          //  hudRightBinding.playlistToggle.setGone()/// = if (show && player.service?.hasPlaylist() == true) View.VISIBLE else View.GONE
+            hudRightBinding.playerOverlayTracks.visibility=if (show && player.service?.hasPlaylist() == true) View.VISIBLE else View.GONE
         }
     }
 

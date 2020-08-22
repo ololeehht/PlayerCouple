@@ -55,6 +55,7 @@ import org.videolan.vlc.viewmodels.mobile.VideoGroupingType
 import org.videolan.vlc.viewmodels.mobile.VideosViewModel
 import org.videolan.vlc.viewmodels.mobile.getViewModel
 import java.util.*
+import kotlin.collections.ArrayList
 
 private const val TAG = "VideoGridFragment"
 
@@ -435,7 +436,7 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
             VideoGroupingType.NAME -> {
                 val selection = multiSelectHelper.getSelection()
                 when (item.itemId) {
-                    R.id.action_videogroup_play -> MediaUtils.openList(activity, selection.getAll(), 0)//=======================================================================
+                    R.id.action_videogroup_play -> MediaUtils.openList(activity, selection.getAll(), 0)//============================================================================================
                     R.id.action_videogroup_append -> MediaUtils.appendMedia(activity, selection.getAll())
                     R.id.action_videogroup_add_playlist -> lifecycleScope.launch { requireActivity().addToPlaylist(withContext(Dispatchers.Default) { selection.getAll() }) }
                     R.id.action_group_similar -> lifecycleScope.launch { viewModel.groupSimilar(selection.getAll().first()) }
@@ -584,7 +585,12 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
                     multiSelectHelper.toggleSelection(position)
                     invalidateActionMode()
                 } else {
-                    viewModel.playVideo(activity, item, position)
+                    //viewModel.playVideo(activity, item, position)
+                    MediaUtils.openList(activity,videoListAdapter.all.flatMap {  when (it) {
+                        is MediaWrapper -> listOf(it)
+                        else -> listOf()
+                    }},position,false)
+                    //MediaUtils.openList(activity, b2a(videoListAdapter.all), position)
                 }
             }
             is Folder -> {
@@ -603,6 +609,8 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
             }
         }
     }
+
+
 }
 
 sealed class VideoAction
