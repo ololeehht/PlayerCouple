@@ -320,7 +320,7 @@
                     vlc:srcCompat="@drawable/ic_player_audiotrack" />-->
 
             <ImageView
-                    android:id="@+id/orientation_toggle"
+                    android:id="@+id/player_resize"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -329,13 +329,16 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:focusable="true"
                     android:padding="4dp"
+                    android:contentDescription="@string/advanced"
+                    android:onClick="@{(v) -> player.resizeVideo()}"
+                    android:scaleType="center"
                     android:visibility="invisible"
                     tools:visibility="visible"
                     vlc:layout_constraintBottom_toBottomOf="@+id/player_overlay_play"
                     vlc:layout_constraintEnd_toStartOf="@+id/player_space_left"
                     vlc:layout_constraintStart_toStartOf="parent"
                     vlc:layout_constraintTop_toTopOf="@+id/player_overlay_play"
-                    vlc:srcCompat="@drawable/ic_player_rotate" />
+                    vlc:srcCompat="@drawable/ic_player_ratio" />
 
             <Space
                     android:id="@+id/player_space_left"
@@ -343,7 +346,7 @@
                     android:layout_height="wrap_content"
                     vlc:layout_constraintBottom_toBottomOf="@+id/playlist_previous"
                     vlc:layout_constraintEnd_toStartOf="@+id/playlist_previous"
-                    vlc:layout_constraintStart_toEndOf="@+id/orientation_toggle"
+                    vlc:layout_constraintStart_toEndOf="@+id/player_resize"
                     vlc:layout_constraintTop_toTopOf="@+id/playlist_previous" />
 
             <ImageView
@@ -451,21 +454,21 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     vlc:layout_constraintBottom_toBottomOf="@+id/playlist_next"
-                    vlc:layout_constraintEnd_toStartOf="@+id/player_resize"
+                    vlc:layout_constraintEnd_toStartOf="@+id/orientation_toggle"
                     vlc:layout_constraintStart_toEndOf="@+id/playlist_next"
                     vlc:layout_constraintTop_toTopOf="@+id/playlist_next" />
 
+            <!--orientation_toggle-->
+            <!--player_resize-->
             <ImageView
-                    android:id="@+id/player_resize"
+                    android:id="@+id/orientation_toggle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="@dimen/small_margins_sides"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
-                    android:contentDescription="@string/advanced"
                     android:focusable="true"
-                    android:onClick="@{(v) -> player.resizeVideo()}"
                     android:scaleType="center"
                     android:padding="4dp"
                     tools:visibility="visible"
@@ -473,7 +476,7 @@
                     vlc:layout_constraintEnd_toEndOf="parent"
                     vlc:layout_constraintStart_toEndOf="@+id/player_space_right"
                     vlc:layout_constraintTop_toTopOf="@+id/player_overlay_play"
-                    vlc:srcCompat="@drawable/ic_player_ratio" />
+                    vlc:srcCompat="@drawable/ic_player_rotate" />
 
 
 

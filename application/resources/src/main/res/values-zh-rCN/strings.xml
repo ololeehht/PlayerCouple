@@ -657,6 +657,7 @@
     <string name="demux_bitrate">解码码率</string>
     <string name="input_bitrate">输入码率</string>
     <string name="video_information">视频信息</string>
+    <string name="mute">静音</string>
 
     <string name="channels">声道</string>
     <string name="resolution">分辨率</string>

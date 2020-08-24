@@ -114,8 +114,10 @@
         <item name="card_background">@color/white</item>
         <item name="default_separator">@color/grey300</item>
         <item name="empty_button">@style/Widget.MaterialComponents.Button.OutlinedButton</item>
-        <item name="card_border">@color/grey300</item>
+        <item name="card_border">@color/grey300</item>t
         <item name="rounded_corners_bottom_default_darker">@drawable/rounded_corners_bottom_default_darker_light</item>
+        <item name="ic_mute_on">@drawable/ic_mute_on</item>
+        <item name="ic_mute_off" >@drawable/ic_mute_off</item>
     </style>
 
     <style name="Theme.VLC.PickerDialog" parent="Theme.MaterialComponents.Dialog">
@@ -480,7 +482,7 @@
     </style>
 
     <style name="VLC.CtxTitle" parent="VLC.TextView">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:textColor">?attr/list_title</item>
         <item name="android:maxLines">1</item>
         <item name="android:singleLine">true</item>

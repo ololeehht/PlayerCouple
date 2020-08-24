@@ -346,6 +346,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
                 vsc.setVisible()
                 hudBinding = DataBindingUtil.bind(player.findViewById(R.id.progress_overlay)) ?: return
                 hudBinding.player = player
+                hudRightBinding.player = player
                 hudBinding.progress = service.playlistManager.player.progress
                 abRepeatAddMarker = hudBinding.abRepeatContainer.findViewById(R.id.ab_repeat_add_marker)
                 service.playlistManager.abRepeat.observe(player, Observer { abvalues ->

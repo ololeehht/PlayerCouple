@@ -64,6 +64,7 @@ import androidx.core.content.edit
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -161,7 +162,8 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         private set
     internal var isAudioBoostEnabled: Boolean = false
         private set
-    private var isMute = false
+    var isMute = false
+        private set
     private var volSave: Int = 0
     internal var volume: Float = 0.toFloat()
     internal var originalVol: Float = 0.toFloat()
@@ -1419,7 +1421,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         }
     }
 
-    private fun updateMute() {
+     fun updateMute() {
         mute(!isMute)
         overlayDelegate.showInfo(if (isMute) R.string.sound_off else R.string.sound_on, 1000)
     }
@@ -2012,8 +2014,13 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         if (optionsDelegate == null) service?.let { optionsDelegate = PlayerOptionsDelegate(this, it) }
         optionsDelegate?.show()
         overlayDelegate.hideOverlay(false)
+        optionsDelegate?.recyclerview?.adapter?.notifyDataSetChanged()
     }
 
+
+    /*
+    * 旋转屏幕
+    * */
     fun toggleOrientation() {
         orientationMode.locked = !orientationMode.locked
         orientationMode.orientation = getOrientationForLock()
@@ -2141,6 +2148,10 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
             removeDownloadedSubtitlesObserver()
             previousMediaPath = null
         }
+    }
+
+    fun finishThisActivity(anchor: View?){
+        finish()
     }
 
     companion object {

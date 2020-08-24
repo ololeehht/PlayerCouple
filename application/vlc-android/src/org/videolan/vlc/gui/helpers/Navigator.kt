@@ -113,7 +113,7 @@ class Navigator : BottomNavigationView.OnNavigationItemSelectedListener, Lifecyc
         return when (id) {
             R.id.nav_audio -> AudioBrowserFragment()
             R.id.nav_directories -> MainBrowserFragment()
-/*            R.id.nav_playlists -> PlaylistFragment()*/
+            R.id.nav_playlists -> PlaylistFragment()
             R.id.nav_network -> NetworkBrowserFragment()
             R.id.nav_more -> MoreFragment()
             else -> VideoGridFragment()

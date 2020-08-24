@@ -40,7 +40,7 @@
 
     <dimen name="media_ctrl_margin_top">20dp</dimen>
     <dimen name="tv_overscan_vertical">27dp</dimen>
-    <dimen name="tv_overscan_horizontal">48dp</dimen>
+    <dimen name="tv_overscan_horizontal">0dp</dimen>
 
 
     <dimen name="video_pip_width">240dp</dimen>
@@ -94,8 +94,9 @@
     <!--Subtitle Downloader Dialog-->
     <dimen name="subs_dl_dialog_width">320dp</dimen>
     <dimen name="subs_dl_dialog_height">170dp</dimen>
-    <dimen name="player_option_width">224dp</dimen>
-
+  <!--  <dimen name="player_option_width">224dp</dimen>-->
+    <dimen name="player_option_width">100dp</dimen>
+    <dimen name="player_option_height">80dp</dimen>
     <dimen name="default_margin_plus_audio_margin">24dp</dimen>
     <dimen name="audio_player_seekbar_bottom_margin">16dp</dimen>
     <dimen name="toolbar_height">40dp</dimen>

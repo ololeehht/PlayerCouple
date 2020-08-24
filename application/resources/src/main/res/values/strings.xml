@@ -687,6 +687,7 @@
     <string name="demux_bitrate">Demux bitrate</string>
     <string name="input_bitrate">Input bitrate</string>
     <string name="video_information">Video information</string>
+    <string name="mute">Mute</string>
 
     <string name="channels">Channels</string>
     <string name="resolution">Resolution</string>

@@ -17,8 +17,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
-            android:visibility="invisible"
+            android:visibility="visible"
             tools:visibility="visible">
+        <ImageView
+            android:id="@+id/player_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:focusable="true"
+            android:padding="2dp"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_back"
+            android:onClick="@{player::finishThisActivity}"
+            tools:visibility="visible" />
 
 
         <ImageView
@@ -73,7 +88,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/video_secondary_display"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/player_overlay_navmenu"
+            app:layout_constraintStart_toEndOf="@+id/player_back"
             app:layout_constraintVertical_bias="1.0"
             tools:text="Game of Thrones S01-E01" />
 
@@ -85,7 +100,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/tracks"
             android:focusable="true"
-            android:onClick="audioTrackChoose"
+            android:onClick="@{player::onAudioSubClick}"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:scaleType="center"

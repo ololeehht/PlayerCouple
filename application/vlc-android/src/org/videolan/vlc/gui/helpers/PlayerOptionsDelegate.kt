@@ -22,8 +22,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.Observer
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.qh.mplayer.utils.LogUtils
 import kotlinx.coroutines.*
 import org.videolan.resources.*
 import org.videolan.tools.AppScope
@@ -31,6 +33,7 @@ import org.videolan.tools.Settings
 import org.videolan.tools.formatRateString
 import org.videolan.vlc.PlaybackService
 import org.videolan.vlc.R
+import org.videolan.vlc.databinding.HistoryItemBinding
 import org.videolan.vlc.databinding.PlayerOptionItemBinding
 import org.videolan.vlc.gui.DiffUtilAdapter
 import org.videolan.vlc.gui.audio.EqualizerFragment
@@ -59,13 +62,13 @@ private const val ID_PASSTHROUGH = 12L
 private const val ID_ABREPEAT = 13L
 private const val ID_LOCK_PLAYER = 14L
 private const val ID_VIDEO_STATS = 15L
+private const val ID_MUTE=16L//静音
 
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
 @SuppressLint("ShowToast")
 class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: PlaybackService) : LifecycleObserver {
-
-    private lateinit var recyclerview: RecyclerView
+    lateinit var recyclerview: RecyclerView
     private lateinit var rootView: FrameLayout
     var flags: Long = 0L
     private val toast by lazy(LazyThreadSafetyMode.NONE) { Toast.makeText(activity, "", Toast.LENGTH_SHORT) }
@@ -74,11 +77,12 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
     private val video = activity is VideoPlayerActivity
     private val res = activity.resources
     private val settings = Settings.getInstance(activity)
-    private lateinit var abrBinding: PlayerOptionItemBinding
-    private lateinit var ptBinding: PlayerOptionItemBinding
-    private lateinit var repeatBinding: PlayerOptionItemBinding
-    private lateinit var shuffleBinding: PlayerOptionItemBinding
-    private lateinit var sleepBinding: PlayerOptionItemBinding
+    private lateinit var abrBinding: PlayerOptionItemBinding//AB循环播放
+    private lateinit var ptBinding: PlayerOptionItemBinding//
+    private lateinit var repeatBinding: PlayerOptionItemBinding//重复模式
+    private lateinit var shuffleBinding: PlayerOptionItemBinding//随机模式
+    private lateinit var sleepBinding: PlayerOptionItemBinding//睡眠计时器
+    private lateinit var muteBinding:PlayerOptionItemBinding
 
     private val abrObs = Observer<Boolean> { abr ->
         if (abr == null || !this::abrBinding.isInitialized) return@Observer
@@ -87,25 +91,38 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
             else -> R.attr.ic_abrepeat
         }
         abrBinding.optionIcon.setImageResource(UiTools.getResourceFromAttribute(activity, resid))
-    }
+    }//ab重复模式
 
     init {
         service.playlistManager.abRepeatOn.observe(activity, abrObs)
     }
 
+    /*
+    * 初始化菜单More选项
+    * */
     fun setup() {
         if (!this::recyclerview.isInitialized || PlayerController.playbackState == PlaybackStateCompat.STATE_STOPPED) return
         val options = mutableListOf<PlayerOption>()
         //if (video) options.add(PlayerOption(ID_LOCK_PLAYER, R.attr.ic_lock_player, res.getString(R.string.lock)))
-        options.add(PlayerOption(ID_SLEEP, R.attr.ic_sleep_normal_style, res.getString(R.string.sleep_title)))
+        /*
+       * 静音模式
+       * */
+        options.add(PlayerOption(ID_MUTE,R.attr.ic_mute_on,res.getString(R.string.mute)))
+        /*
+       * 回放速度时间确定
+       * */
         if (service.isSeekable) {
             options.add(PlayerOption(ID_PLAYBACK_SPEED, R.attr.ic_speed_normal_style, res.getString(R.string.playback_speed)))
         }
+        /*
+       * 睡眠时间确定
+       * */
+        options.add(PlayerOption(ID_SLEEP, R.attr.ic_sleep_normal_style, res.getString(R.string.sleep_title)))
         options.add(PlayerOption(ID_JUMP_TO, R.attr.ic_jumpto_normal_style, res.getString(R.string.jump_to_time)))
         options.add(PlayerOption(ID_EQUALIZER, R.attr.ic_equalizer_normal_style, res.getString(R.string.equalizer)))
         if (video) {
-            if (primary && !Settings.showTvUi && service.audioTracksCount > 0)
-                options.add(PlayerOption(ID_PLAY_AS_AUDIO, R.attr.ic_playasaudio_on, res.getString(R.string.play_as_audio)))
+            /*if (primary && !Settings.showTvUi && service.audioTracksCount > 0)
+                options.add(PlayerOption(ID_PLAY_AS_AUDIO, R.attr.ic_playasaudio_on, res.getString(R.string.play_as_audio)))*/
             if (primary && AndroidDevices.pipAllowed && !AndroidDevices.isDex(activity))
                 options.add(PlayerOption(ID_POPUP_VIDEO, R.attr.ic_popup_dim, res.getString(R.string.ctx_pip_title)))
             if (primary)
@@ -113,13 +130,20 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
             if (service.canShuffle()) options.add(PlayerOption(ID_SHUFFLE, R.drawable.ic_shuffle, res.getString(R.string.shuffle_title)))
             val chaptersCount = service.getChapters(-1)?.size ?: 0
             if (chaptersCount > 1) options.add(PlayerOption(ID_CHAPTER_TITLE, R.attr.ic_chapter_normal_style, res.getString(R.string.go_to_chapter)))
-            options.add(PlayerOption(ID_VIDEO_STATS, R.attr.ic_video_stats, res.getString(R.string.video_information)))
+            //options.add(PlayerOption(ID_VIDEO_STATS, R.attr.ic_video_stats, res.getString(R.string.video_information)))
         }
-        options.add(PlayerOption(ID_ABREPEAT, R.attr.ic_abrepeat, res.getString(R.string.ab_repeat)))
-        options.add(PlayerOption(ID_SAVE_PLAYLIST, R.attr.ic_save, res.getString(R.string.playlist_save)))
-        if (service.playlistManager.player.canDoPassthrough() && settings.getString("aout", "0") == "0")
+        /*
+        * AB重复模式
+        * */
+        //options.add(PlayerOption(ID_ABREPEAT, R.attr.ic_abrepeat, res.getString(R.string.ab_repeat)))
+        /*
+        * 保存播放列表
+        * */
+        //options.add(PlayerOption(ID_SAVE_PLAYLIST, R.attr.ic_save, res.getString(R.string.playlist_save)))
+        if (service.playlistManager.player.canDoPassthrough() && settings.getString("·", "0") == "0")
             options.add(PlayerOption(ID_PASSTHROUGH, R.attr.ic_passthrough, res.getString(R.string.audio_digital_title)))
         (recyclerview.adapter as OptionsAdapter).update(options)
+
     }
 
     fun show() {
@@ -128,7 +152,8 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
             recyclerview = rootView.findViewById(R.id.options_list)
             service.lifecycle.addObserver(this)
             activity.lifecycle.addObserver(this)
-            if (recyclerview.layoutManager == null) recyclerview.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+//            if (recyclerview.layoutManager == null) recyclerview.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+            if (recyclerview.layoutManager == null) recyclerview.layoutManager = GridLayoutManager(activity,4)
             recyclerview.adapter = OptionsAdapter()
             recyclerview.itemAnimator = null
 
@@ -179,6 +204,15 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
             ID_VIDEO_STATS -> {
                 hide()
                 service.playlistManager.toggleStats()
+            }
+            ID_MUTE->{
+                hide()
+//                option.icon
+                (activity as VideoPlayerActivity).updateMute()
+                setMuteState()
+                //service.playlistManager.player.vol
+                //静音
+
             }
             else -> showFragment(option.id)
         }
@@ -236,6 +270,9 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
         hide()
     }
 
+    /*
+    * 重复模式设置
+    * */
     private fun setRepeatMode() {
         when (service.repeatType) {
             PlaybackStateCompat.REPEAT_MODE_NONE -> {
@@ -253,6 +290,20 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
                 repeatBinding.optionIcon.setImageResource(R.drawable.ic_repeat)
                 service.repeatType = PlaybackStateCompat.REPEAT_MODE_NONE
             }
+        }
+    }
+
+    /*
+    * 设置静音状态
+    * */
+    private fun  setMuteState(){
+        if(activity is VideoPlayerActivity)
+        {
+            if(activity.isMute){//静音
+                muteBinding.optionIcon.setImageResource(R.drawable.ic_mute_on)
+            }
+            else
+                muteBinding.optionIcon.setImageResource(R.drawable.ic_mute_off)
         }
     }
 
@@ -341,6 +392,21 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
         }
     }
 
+    private fun initMute(binding: PlayerOptionItemBinding){
+        muteBinding=binding
+        AppScope.launch(Dispatchers.Main){
+            if(activity is VideoPlayerActivity)
+            {
+                val mute = activity.isMute
+                LogUtils.loge("mute:${mute}")
+                //binding.optionIcon.setImageResource(UiTools.getResourceFromAttribute(activity,if(mute)R.attr.ic_mute_on else R.attr.ic_mute_off))
+                muteBinding.optionIcon.setImageResource(if(mute)R.drawable.ic_mute_on else R.drawable.ic_mute_off)
+                muteBinding.optionTitle.setText(R.string.mute)
+            }
+        }
+
+    }
+
     private fun togglePassthrough() {
         val enabled = !VLCOptions.isAudioDigitalOutputEnabled(settings)
         if (service.setAudioDigitalOutputEnabled(enabled)) {
@@ -352,6 +418,8 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
             toast.setText(R.string.audio_digital_failed)
         toast.show()
     }
+
+
 
     fun isShowing() = rootView.visibility == View.VISIBLE
 
@@ -378,6 +446,7 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
                 option.id == ID_AUDIO_DELAY -> initAudioDelay(holder.binding)
                 option.id == ID_JUMP_TO -> initJumpTo(holder.binding)
                 option.id == ID_SPU_DELAY -> initSpuDelay(holder.binding)
+                option.id == ID_MUTE -> initMute(holder.binding)
             }
             holder.binding.optionIcon.setImageResource(UiTools.getResourceFromAttribute(activity, option.icon))
         }
