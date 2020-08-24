@@ -164,7 +164,7 @@ internal class AudioPlayerAnimator : IAudioPlayerAnimator, LifecycleObserver {
 
     override fun onSlide(slideOffset: Float) {
         binding.progressBarMask.alpha = slideOffset
-        if (slideOffset != 1f) audioPlayer.clearSearch()
+       // if (slideOffset != 1f) audioPlayer.clearSearch()
         binding.playlistSearch.alpha = slideOffset
         binding.playlistSwitch.alpha = slideOffset
         binding.advFunction.alpha = slideOffset

@@ -121,20 +121,20 @@
 
     <!--搜索媒体-->
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+            android:layout_width="240dp"
             android:maxWidth="480dp"
             android:layout_centerHorizontal="true"
             android:background="@color/playerbackground"
             android:id="@+id/video_playlist_container"
             android:visibility="gone"
             android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
             tools:visibility="visible">
 
         <View
                 android:id="@+id/view"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:background="@color/playerbackground"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -151,7 +151,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/view"
                 android:layout_marginStart="8dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
+        <!--<com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/playlist_search_text"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="0dp"
@@ -179,7 +179,7 @@
                     android:inputType="textFilter"
                     android:textCursorDrawable="@drawable/cursor_w"
                     android:nextFocusDown="@+id/video_playlist" />
-        </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>-->
 
 
         <androidx.recyclerview.widget.RecyclerView

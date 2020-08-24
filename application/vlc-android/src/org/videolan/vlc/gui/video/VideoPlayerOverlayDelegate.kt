@@ -104,7 +104,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
     lateinit var closeButton: View
     lateinit var playlistContainer: View
     lateinit var playlist: RecyclerView
-    lateinit var playlistSearchText: TextInputLayout
+    //lateinit var playlistSearchText: TextInputLayout
     lateinit var playlistAdapter: PlaylistAdapter
 
 
@@ -643,7 +643,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             showControls(false)
             player.isShowing = false
             dimStatusBar(true)
-            playlistSearchText.editText?.setText("")
+            //playlistSearchText.editText?.setText("")
         } else if (!fromUser) {
             /*
              * Try to hide the Nav Bar again.

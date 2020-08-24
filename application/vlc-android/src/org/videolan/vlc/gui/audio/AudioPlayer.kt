@@ -329,7 +329,7 @@ class AudioPlayer : Fragment(), PlaylistAdapter.IPlayer, TextWatcher, IAudioPlay
     }
 
     override fun playItem(position: Int, item: MediaWrapper) {
-        clearSearch()
+        //clearSearch()
         playlistModel.play(playlistModel.getPlaylistPosition(position, item))
     }
 
@@ -420,13 +420,13 @@ class AudioPlayer : Fragment(), PlaylistAdapter.IPlayer, TextWatcher, IAudioPlay
             optionsDelegate.hide()
             return true
         }
-        return clearSearch()
+        return false//clearSearch()
     }
 
-    fun clearSearch(): Boolean {
+   /* fun clearSearch(): Boolean {
         if (this::playlistModel.isInitialized) playlistModel.filter(null)
         return hideSearchField()
-    }
+    }*/
 
     private fun hideSearchField(): Boolean {
         if (binding.playlistSearchText.visibility != View.VISIBLE) return false

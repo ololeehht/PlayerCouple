@@ -395,10 +395,10 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
 
 
         overlayDelegate.playlist = findViewById(R.id.video_playlist)
-        overlayDelegate.playlistSearchText = findViewById(R.id.playlist_search_text)
+        //overlayDelegate.playlistSearchText = findViewById(R.id.playlist_search_text)
         overlayDelegate.playlistContainer = findViewById(R.id.video_playlist_container)
         overlayDelegate.closeButton = findViewById(R.id.close_button)
-        overlayDelegate.playlistSearchText.editText?.addTextChangedListener(this)
+       // overlayDelegate.playlistSearchText.editText?.addTextChangedListener(this)
 
         overlayDelegate.playerUiContainer = findViewById(R.id.player_ui_container)
 
@@ -493,7 +493,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         }
     }
 
-    private fun hideSearchField(): Boolean {
+   /* private fun hideSearchField(): Boolean {
         if (overlayDelegate.playlistSearchText.visibility != View.VISIBLE) return false
         overlayDelegate.playlistSearchText.editText?.apply {
             removeTextChangedListener(this@VideoPlayerActivity)
@@ -503,7 +503,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         UiTools.setKeyboardVisibility(overlayDelegate.playlistSearchText, false)
 
         return true
-    }
+    }*/
 
     override fun onResume() {
         overridePendingTransition(0, 0)
