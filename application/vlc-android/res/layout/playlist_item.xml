@@ -56,12 +56,13 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginEnd="8dp" />
+                 />
+        <!--android:layout_marginEnd="8dp"-->
 
 
         <ImageView
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="60dp"
                 android:id="@+id/coverImage"
                 android:layout_weight="1"
                 tools:src="@tools:sample/avatars[0]"
@@ -88,17 +89,17 @@
                 app:layout_constraintStart_toStartOf="@+id/coverImage"
                 app:layout_constraintEnd_toEndOf="@+id/coverImage" />
 
+        <!-- android:layout_marginEnd="8dp"
+        android:paddingLeft="8dp"
+                android:paddingRight="8dp"-->
         <TextView
                 android:id="@+id/audio_item_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
                 android:singleLine="true"
                 android:text="@{media.title}"
                 android:textColor="?attr/font_default"
@@ -109,15 +110,17 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/coverImage"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Symphonie n°1" />
+                tools:text="Symphonie n°1"
+                />
 
+        <!--android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:layout_marginEnd="8dp"-->
         <TextView
                 android:id="@+id/audio_item_subtitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@{subTitle}"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
                 android:singleLine="true"
                 android:ellipsize="middle"
                 android:textColor="?attr/font_audio_light"
@@ -128,7 +131,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+                android:gravity="center_vertical"
                 android:layout_marginBottom="4dp"
                 tools:text="Beethoven"
                 app:layout_constraintStart_toEndOf="@+id/coverImage"
@@ -148,6 +151,7 @@
                 android:onClick="@{holder::onMoreClick}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

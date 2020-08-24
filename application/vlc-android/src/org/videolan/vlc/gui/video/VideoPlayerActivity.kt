@@ -541,7 +541,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
             videoUri = uri
             if (isPlaylistVisible) {
                 overlayDelegate.playlistAdapter.currentIndex = currentMediaPosition
-                overlayDelegate.playlistContainer.setGone()
+                //overlayDelegate.playlistContainer.setGone()
             }
             if (settings.getBoolean(VIDEO_TRANSITION_SHOW, true)) showTitle()
             initUI()

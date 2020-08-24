@@ -25,6 +25,7 @@ package org.videolan.vlc.gui.audio
 
 import android.annotation.TargetApi
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -121,6 +122,7 @@ class PlaylistAdapter(private val player: IPlayer) : DiffUtilAdapter<MediaWrappe
             holder.binding.playing.visibility = View.VISIBLE
             holder.binding.coverImage.visibility = View.INVISIBLE
             holder.binding.audioItemTitle.setTypeface(null, Typeface.BOLD)
+            holder.binding.audioItemTitle.setTextColor(Color.RED)
             currentPlayingVisu = holder.binding.playing
         } else {
             holder.binding.playing.stop()
