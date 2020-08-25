@@ -239,13 +239,15 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
                         "video"->{changeGroupingType(VideoGroupingType.NAME)
                         if(activity is MainActivity)
                         {
-                            (activity as MainActivity).toolbarTitle.text="VIDEO"
+                            (activity as MainActivity).isVideoByName=true
+                            (activity as MainActivity).toolbarTitle.text= (activity as MainActivity).getVideoOrFolders()
                         }
                         }
                         "folders"->{changeGroupingType(VideoGroupingType.FOLDER)
                             if(activity is MainActivity)
                             {
-                                (activity as MainActivity).toolbarTitle.text="FOLDERS"
+                                (activity as MainActivity).isVideoByName=false
+                                (activity as MainActivity).toolbarTitle.text=(activity as MainActivity).getVideoOrFolders()
                             }
                         }
                     }

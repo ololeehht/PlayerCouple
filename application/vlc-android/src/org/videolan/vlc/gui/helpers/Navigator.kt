@@ -114,15 +114,23 @@ class Navigator : BottomNavigationView.OnNavigationItemSelectedListener, Lifecyc
             R.id.nav_directories -> MainBrowserFragment()
             R.id.nav_playlists -> PlaylistFragment()
             R.id.nav_network -> NetworkBrowserFragment()
-            R.id.nav_more -> MoreFragment()
+           /* R.id.nav_more -> MoreFragment()*/
             else -> VideoGridFragment()
         }
     }
 
-    public override fun showFragment(id: Int) {
-        val tag = getTag(id)
-        val fragment = getNewFragment(id)
-        showFragment(fragment, id, tag)
+     override fun showFragment(id: Int) {
+       when(id)
+       {
+           R.id.nav_video->{activity.toolbarTitle.setText(activity.getVideoOrFolders())}
+           R.id.nav_audio->{
+               activity.toolbarTitle.setText(activity.getString(R.string.audio))
+           }
+           R.id.nav_playlists->activity.toolbarTitle.setText(activity.getString(R.string.playlists))
+       }
+         val tag = getTag(id)
+         val fragment = getNewFragment(id)
+         showFragment(fragment, id, tag)
     }
 
     override fun forceLoadVideoFragment() {

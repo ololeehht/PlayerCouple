@@ -35,17 +35,32 @@
             android:id="@+id/nav_audio"
             android:title="@string/audio"
             android:icon="@drawable/ic_menu_audio" />
-    <item
+   <!-- <item
             android:id="@+id/nav_directories"
             android:title="@string/browse"
-            android:icon="@drawable/ic_menu_folder" />
+            android:icon="@drawable/ic_menu_folder" />-->
   <item
             android:id="@+id/nav_playlists"
             android:title="@string/playlists"
             android:icon="@drawable/ic_menu_playlist" />
-    <item
+   <!-- <item
             android:id="@+id/nav_more"
             android:title="@string/more"
-            android:icon="@drawable/ic_nav_more" />
+            android:icon="@drawable/ic_nav_more" />-->
+    <item
+        android:id="@+id/nav_stream"
+        android:title="@string/streams"
+        android:icon="@drawable/ic_menu_stream" />
+
+    <item
+        android:id="@+id/nav_history"
+        android:title="@string/history"
+        android:icon="@drawable/ic_menu_history" />
+
+    <item
+        android:id="@+id/nav_settings"
+        android:title="@string/setting"
+        android:icon="@drawable/ic_setting"
+        />
 
 </menu>

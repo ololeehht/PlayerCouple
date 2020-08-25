@@ -65,7 +65,6 @@ class SecondaryActivity : ContentActivity() {
     override val displayTitle = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Toast.makeText(this, "SecondaryActivity create", Toast.LENGTH_SHORT).show()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.secondary)
         initAudioPlayerContainerActivity()

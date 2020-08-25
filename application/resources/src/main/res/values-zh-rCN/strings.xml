@@ -17,6 +17,7 @@
     <string name="sortby_number">轨道编号</string>
     <string name="searchable_hint">搜索…</string>
     <string name="history">历史</string>
+    <string name="setting">设置</string>
 
     <plurals name="search_found_results_quantity">
         <item quantity="other">已找到 %d 条结果</item>
@@ -89,6 +90,7 @@
     <string name="internal_memory">内部存储</string>
     <string name="audio">音频</string>
     <string name="video">视频</string>
+    <string name="folders">文件夹</string>
     <string name="bookmarks">书签</string>
     <string name="equalizer">均衡器</string>
     <string name="all_albums">所有专辑</string>

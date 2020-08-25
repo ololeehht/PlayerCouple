@@ -44,6 +44,7 @@ import org.videolan.vlc.gui.browser.NetworkBrowserFragment
 import org.videolan.vlc.gui.helpers.INavigator
 import org.videolan.vlc.gui.helpers.Navigator
 import org.videolan.vlc.gui.helpers.UiTools
+import org.videolan.vlc.gui.preferences.PreferencesActivity
 import org.videolan.vlc.gui.video.VideoGridFragment
 import org.videolan.vlc.interfaces.Filterable
 import org.videolan.vlc.interfaces.IRefreshable
@@ -58,8 +59,8 @@ private const val TAG = "MPlayer/MainActivity"
 @ObsoleteCoroutinesApi
 class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerActivity,INavigator by Navigator(),NavigationView.OnNavigationItemSelectedListener
 {
-    public lateinit var toolbarTitle:TextView
-    public  var  isVideoByName=true
+    lateinit var toolbarTitle:TextView
+    var  isVideoByName=true
     lateinit var drawerLayout:DrawerLayout
     lateinit var naviMenu:NavigationView
     var refreshing: Boolean = false
@@ -265,11 +266,34 @@ class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerA
             R.id.nav_audio -> "AudioBrowserFragment"
             R.id.nav_directories -> "MainBrowserFragment"
             R.id.nav_network -> "NetworkBrowserFragment"
-            R.id.nav_more -> "MoreFragment"
+           R.id.nav_playlists->"PlaylistFragment"
+           R.id.nav_history->{
+               val i = Intent(this, SecondaryActivity::class.java)
+               i.putExtra("fragment", SecondaryActivity.HISTORY)
+               startActivityForResult(i, SecondaryActivity.ACTIVITY_RESULT_SECONDARY)
+               return true
+           }
+           R.id.nav_settings->{
+               startActivityForResult(Intent(this, PreferencesActivity::class.java), ACTIVITY_RESULT_PREFERENCES)
+               return true
+           }
+           R.id.nav_stream->{
+               val i = Intent(this, SecondaryActivity::class.java)
+               i.putExtra("fragment", SecondaryActivity.STREAMS)
+               startActivityForResult(i, SecondaryActivity.ACTIVITY_RESULT_SECONDARY)
+               return true
+           }
+           /* R.id.nav_more -> "MoreFragment"*/
+          /* R.id.nav_stream->""*/
             else -> "VideoGridFragment"
         }
         return fragmentName.equals(currentFragment!!::class.simpleName)
     }
 
+
+
+    fun  getVideoOrFolders():String{
+       return if(isVideoByName)getString(R.string.video) else getString(R.string.folders)
+    }
 
 }

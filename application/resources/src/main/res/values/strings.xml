@@ -18,6 +18,7 @@
     <string name="sortby_number">Nb tracks</string>
     <string name="searchable_hint">Search…</string>
     <string name="history">History</string>
+    <string name="setting">Setting</string>
 
     <plurals name="search_found_results_quantity">
         <item quantity="one">%d result found</item>
@@ -98,6 +99,7 @@
     <string name="internal_memory">Internal memory</string>
     <string name="audio">Audio</string>
     <string name="video">Video</string>
+    <string name="folders">Folders</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="equalizer">Equalizer</string>
     <string name="all_albums">All albums</string>
