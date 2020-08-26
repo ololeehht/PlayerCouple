@@ -219,6 +219,7 @@
     <string name="remove_playlist_item">%1$s has been dismissed from playlist</string>
     <string name="rearrange_order">Rearrange order</string>
     <string name="hold_to_seek">Hold to seek</string>
+    <string name="order">Order</string>
 
     <string name="audio_player_tips">Audio player tips</string>
     <string name="previous_next_song">Previous/Next song</string>

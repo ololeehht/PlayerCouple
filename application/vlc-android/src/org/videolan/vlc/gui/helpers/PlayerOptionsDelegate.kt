@@ -8,6 +8,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -189,7 +190,6 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
             }
             ID_REPEAT -> setRepeatMode()
             ID_SHUFFLE -> {
-                service.shuffle()
                 setShuffle()
             }
             ID_PASSTHROUGH -> togglePassthrough()
@@ -271,9 +271,21 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
     }
 
     /*
+    * 随机模式
+    * */
+     fun setShuffle() {
+        service.shuffle()
+        shuffleBinding.optionIcon.setImageResource(if (service.isShuffling) R.drawable.ic_shuffle_on else R.drawable.ic_shuffle)
+        if (service.isShuffling)
+            LogUtils.loge("T_T随机")
+        else
+            LogUtils.loge("T_T顺序")
+    }
+
+    /*
     * 重复模式设置
     * */
-    private fun setRepeatMode() {
+     fun setRepeatMode() {
         when (service.repeatType) {
             PlaybackStateCompat.REPEAT_MODE_NONE -> {
                 repeatBinding.optionIcon.setImageResource(R.drawable.ic_repeat_one)
@@ -292,6 +304,8 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
             }
         }
     }
+    
+
 
     /*
     * 设置静音状态
@@ -307,9 +321,7 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
         }
     }
 
-    private fun setShuffle() {
-        shuffleBinding.optionIcon.setImageResource(if (service.isShuffling) R.drawable.ic_shuffle_on else R.drawable.ic_shuffle)
-    }
+
 
     private fun initShuffle(binding: PlayerOptionItemBinding) {
         shuffleBinding = binding

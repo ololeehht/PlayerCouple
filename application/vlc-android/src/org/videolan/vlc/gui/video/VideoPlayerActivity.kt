@@ -173,7 +173,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
     lateinit var touchDelegate: VideoTouchDelegate
     val statsDelegate: VideoStatsDelegate by lazy(LazyThreadSafetyMode.NONE) { VideoStatsDelegate(this, { overlayDelegate.showOverlayTimeout(OVERLAY_INFINITE) }, { overlayDelegate.showOverlay(true) }) }
     val delayDelegate: VideoDelayDelegate by lazy(LazyThreadSafetyMode.NONE) { VideoDelayDelegate(this@VideoPlayerActivity) }
-    val overlayDelegate: VideoPlayerOverlayDelegate by lazy(LazyThreadSafetyMode.NONE) { VideoPlayerOverlayDelegate(this@VideoPlayerActivity) }
+    val overlayDelegate: VideoPlayerOverlayDelegate by lazy(LazyThreadSafetyMode.NONE) { VideoPlayerOverlayDelegate(this@VideoPlayerActivity)  }
 
     // Tracks & Subtitles
     private var audioTracksList: Array<MediaPlayer.TrackDescription>? = null
@@ -398,6 +398,9 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         //overlayDelegate.playlistSearchText = findViewById(R.id.playlist_search_text)
         overlayDelegate.playlistContainer = findViewById(R.id.video_playlist_container)
         overlayDelegate.closeButton = findViewById(R.id.close_button)
+        overlayDelegate.title=findViewById(R.id.play_list_mode_change_tv)
+        overlayDelegate.toggleModeButton=findViewById(R.id.play_list_mode_change)
+
        // overlayDelegate.playlistSearchText.editText?.addTextChangedListener(this)
 
         overlayDelegate.playerUiContainer = findViewById(R.id.player_ui_container)
@@ -2038,11 +2041,69 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         LogUtils.loge("### lock  is locked:$isLocked")
     }
 
+
+
+
     /*
     * 加载播放列表
     * */
     fun loadPlayList(){
         overlayDelegate.togglePlaylist()
+        val listener = object : VideoPlayerOverlayDelegate.ModeChangeListener {
+            override fun order() {
+                if(service!!.isShuffling)//如果是打乱了的，就不打乱
+                {
+                    service!!.shuffle()
+                }
+                if (service!!.isShuffling)
+                    LogUtils.loge("T_T随机")
+                else
+                    LogUtils.loge("T_T顺序")
+                if(service!!.repeatType!=PlaybackStateCompat.REPEAT_MODE_NONE)//不重复
+                    service!!.repeatType=PlaybackStateCompat.REPEAT_MODE_NONE
+            }
+
+            override fun shuffle() {
+                if(!service!!.isShuffling)//如果是顺序的，就打乱
+                {
+                    service!!.shuffle()
+                }
+                if (service!!.isShuffling)
+                    LogUtils.loge("T_T随机")
+                else
+                    LogUtils.loge("T_T顺序")
+                if(service!!.repeatType!=PlaybackStateCompat.REPEAT_MODE_NONE)//不重复
+                    service!!.repeatType=PlaybackStateCompat.REPEAT_MODE_NONE
+            }
+
+            override fun repeatSingle() {
+                if(service!!.isShuffling)//如果是打乱了的，就不打乱
+                {
+                    service!!.shuffle()
+                }
+                if (service!!.isShuffling)
+                    LogUtils.loge("T_T随机")
+                else
+                    LogUtils.loge("T_T顺序")
+                if(service!!.repeatType!=PlaybackStateCompat.REPEAT_MODE_ONE)//单曲重复
+                    service!!.repeatType=PlaybackStateCompat.REPEAT_MODE_ONE
+            }
+
+            override fun repeatAll() {
+                if(service!!.isShuffling)//如果是打乱了的，就不打乱
+                {
+                    service!!.shuffle()
+                }
+                if (service!!.isShuffling)
+                    LogUtils.loge("T_T随机")
+                else
+                    LogUtils.loge("T_T顺序")
+                if(service!!.repeatType!=PlaybackStateCompat.REPEAT_MODE_ALL)//单曲重复
+                    service!!.repeatType=PlaybackStateCompat.REPEAT_MODE_ALL
+            }
+        }
+        overlayDelegate.changeListener=listener
+        overlayDelegate.setRes()
         LogUtils.loge("### playlist")
     }
 

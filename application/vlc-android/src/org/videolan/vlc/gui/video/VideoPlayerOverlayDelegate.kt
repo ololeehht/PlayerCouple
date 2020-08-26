@@ -13,6 +13,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
@@ -25,25 +26,23 @@ import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.google.android.material.textfield.TextInputLayout
+import com.qh.mplayer.utils.LogUtils
 import kotlinx.coroutines.*
 import org.videolan.libvlc.RendererItem
 import org.videolan.libvlc.util.AndroidUtil
-import org.videolan.medialibrary.interfaces.media.MediaWrapper
 import org.videolan.medialibrary.media.MediaWrapperImpl
 import org.videolan.resources.AndroidDevices
-import org.videolan.resources.util.getFromMl
 import org.videolan.tools.*
 import org.videolan.vlc.PlaybackService
 import org.videolan.vlc.R
 import org.videolan.vlc.RendererDelegate
 import org.videolan.vlc.databinding.PlayerHudBinding
 import org.videolan.vlc.databinding.PlayerHudRightBinding
+import org.videolan.vlc.gui.PlayMode
 import org.videolan.vlc.gui.audio.PlaylistAdapter
 import org.videolan.vlc.gui.browser.FilePickerActivity
 import org.videolan.vlc.gui.browser.KEY_MEDIA
@@ -56,8 +55,8 @@ import org.videolan.vlc.manageAbRepeatStep
 import org.videolan.vlc.media.MediaUtils
 import org.videolan.vlc.util.FileUtils
 import org.videolan.vlc.viewmodels.PlaylistModel
-import java.lang.Exception
 import java.lang.Runnable
+import java.util.prefs.NodeChangeListener
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -70,6 +69,11 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
     private lateinit var volumeValueText: TextView
     private lateinit var playerVolumeProgress: PlayerProgress
 
+    /*
+    * 四种模式
+    * */
+
+
     var info: TextView? = null
     var overlayInfo: View? = null
     lateinit var playerUiContainer:RelativeLayout
@@ -78,6 +82,8 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
     lateinit var hudBinding: PlayerHudBinding
     lateinit var hudRightBinding: PlayerHudRightBinding
     private var overlayBackground: View? = null
+
+    var changeListener:ModeChangeListener?=null
 
 
     private var overlayTimeout = 0
@@ -102,6 +108,8 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
 
     private var orientationLockedBeforeLock: Boolean = false
     lateinit var closeButton: View
+    lateinit var title:TextView//playlist播放列表
+    lateinit var toggleModeButton:ImageView//选择播放列表随机模式
     lateinit var playlistContainer: View
     lateinit var playlist: RecyclerView
     //lateinit var playlistSearchText: TextInputLayout
@@ -576,10 +584,69 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             //hudRightBinding.playlistToggle.setOnClickListener(player)
             hudRightBinding.playerOverlayTracks.setOnClickListener(player)
             closeButton.setOnClickListener { togglePlaylist() }
-
+            toggleModeButton.setOnClickListener{changePlayListMode()}
             val callback = SwipeDragItemTouchHelperCallback(playlistAdapter, true)
             val touchHelper = ItemTouchHelper(callback)
             touchHelper.attachToRecyclerView(playlist)
+        }
+    }
+
+    var currentMode:PlayMode=PlayMode.MODE_ORDER
+
+    /*
+    * 改变播放器的模式
+    * */
+    fun changePlayListMode(){
+        when(currentMode){
+            PlayMode.MODE_ORDER->{
+                currentMode=PlayMode.MODE_SHUFFLE
+            }
+            PlayMode.MODE_SHUFFLE->{
+                currentMode=PlayMode.MODE_REPEAT_SINGLE
+            }
+            PlayMode.MODE_REPEAT_SINGLE->{
+                currentMode=PlayMode.MODE_REPEAT_ALL
+            }
+            PlayMode.MODE_REPEAT_ALL->{
+                currentMode=PlayMode.MODE_ORDER
+            }
+        }
+        setRes()
+    }
+
+
+    fun setResInner(imageRes:Int, stringRes:Int){
+        toggleModeButton.setImageResource(imageRes)
+        title.setText(stringRes)
+    }
+
+    fun setRes(){
+        if(changeListener==null)
+        {
+            LogUtils.loge("T_T     changeListener为空")
+        }
+        else
+        {
+            LogUtils.loge("T_T     changeListener不为空")
+        }
+        when(currentMode)
+        {
+            PlayMode.MODE_ORDER->{
+                setResInner(R.drawable.order_play,R.string.order)
+                changeListener?.order()
+            }
+            PlayMode.MODE_SHUFFLE->{
+                setResInner(R.drawable.ic_shuffle_white,R.string.shuffle_on)
+                changeListener?.shuffle()
+            }
+            PlayMode.MODE_REPEAT_SINGLE->{
+                setResInner(R.drawable.ic_auto_repeat_one_pressed,R.string.repeat_single)
+                changeListener?.repeatSingle()
+            }
+            PlayMode.MODE_REPEAT_ALL->{
+                setResInner(R.drawable.ic_auto_repeat_pressed,R.string.repeat_all)
+                changeListener?.repeatAll()
+            }
         }
     }
 
@@ -736,5 +803,16 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
 
     private fun downloadSubtitles() = player.service?.currentMediaWrapper?.let {
         MediaUtils.getSubs(player, it)
+    }
+
+    /*
+    *
+    * Callback
+    * */
+    interface ModeChangeListener{
+        fun order()
+        fun shuffle()
+        fun repeatSingle()
+        fun repeatAll()
     }
 }

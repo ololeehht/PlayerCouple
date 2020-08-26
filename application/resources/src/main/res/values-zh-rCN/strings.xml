@@ -203,6 +203,7 @@
     <string name="remove_playlist_item">%1$s 已从播放列表移除</string>
     <string name="rearrange_order">重排顺序</string>
     <string name="hold_to_seek">按住可快进/快退</string>
+    <string name="order">顺序</string>
 
     <string name="audio_player_tips">音频播放器提示</string>
     <string name="previous_next_song">上/下一曲</string>
