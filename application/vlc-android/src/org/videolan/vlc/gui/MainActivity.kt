@@ -97,7 +97,7 @@ class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerA
         toolbarTitle= subView.findViewById(R.id.toolbar_vlc_title)
         LogUtils.loge("======$subView")
         LogUtils.loge("======$title")
-        toolbarTitle.setText("VIDEO")
+        toolbarTitle.setText(getString(R.string.video))
         drawerLayout=findViewById<DrawerLayout>(R.id.main_drawer)
         naviMenu=findViewById<NavigationView>(R.id.menu_drawer)
         val toggle=ActionBarDrawerToggle(this,

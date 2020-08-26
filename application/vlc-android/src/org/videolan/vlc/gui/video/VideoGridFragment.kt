@@ -76,6 +76,8 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
         if (item is Folder) i.putExtra(KEY_FOLDER, item)
         else if (item is VideoGroup) i.putExtra(KEY_GROUP, item)
         startActivityForResult(i, SecondaryActivity.ACTIVITY_RESULT_SECONDARY)
+        binding.directoriesEntryLayout.clickListener=View.OnClickListener {
+            openDirectories(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -223,12 +225,13 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
         if(activity is SecondaryActivity)
         {
             binding.videoTab.visibility=View.GONE
+            binding.isFolder=false
         }
         else{
             videoTabName=binding.videoTab.newTab()
             videoTabDirectory=binding.videoTab.newTab()
-            videoTabName.setText("video")
-            videoTabDirectory.setText("folders")
+            videoTabName.setText(activity?.getString(R.string.video))
+            videoTabDirectory.setText(activity?.getString(R.string.folders))
             binding.videoTab.addTab(videoTabName)
             binding.videoTab.addTab(videoTabDirectory)
             binding.videoTab.addOnTabSelectedListener( object : TabLayout.OnTabSelectedListener {
@@ -236,18 +239,20 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
                     // Toast.makeText(this@VideoGridFragment.requireContext(), "${tab.text} clicked ", Toast.LENGTH_SHORT).show()
                     when(tab.text)
                     {
-                        "video"->{changeGroupingType(VideoGroupingType.NAME)
+                        activity?.getString(R.string.video)->{changeGroupingType(VideoGroupingType.NAME)
                         if(activity is MainActivity)
                         {
                             (activity as MainActivity).isVideoByName=true
                             (activity as MainActivity).toolbarTitle.text= (activity as MainActivity).getVideoOrFolders()
+                            binding.isFolder=false
                         }
                         }
-                        "folders"->{changeGroupingType(VideoGroupingType.FOLDER)
+                        activity?.getString(R.string.folders )->{changeGroupingType(VideoGroupingType.FOLDER)
                             if(activity is MainActivity)
                             {
                                 (activity as MainActivity).isVideoByName=false
                                 (activity as MainActivity).toolbarTitle.text=(activity as MainActivity).getVideoOrFolders()
+                                binding.isFolder=true
                             }
                         }
                     }
@@ -271,7 +276,15 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
         super.onStart()
         if(activity is MainActivity)
         {
-            if((activity as MainActivity).isVideoByName)videoTabName.select()else videoTabDirectory.select()
+            if((activity as MainActivity).isVideoByName){
+                binding.isFolder=false
+                videoTabName.select()
+            }
+            else
+            {
+                binding.isFolder=true
+                videoTabDirectory.select()
+            }
         }
         registerForContextMenu(binding.videoGrid)
         updateViewMode()
@@ -587,11 +600,11 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
                     multiSelectHelper.toggleSelection(position)
                     invalidateActionMode()
                 } else {
-                    //viewModel.playVideo(activity, item, position)
-                    MediaUtils.openList(activity,videoListAdapter.all.flatMap {  when (it) {
+                    viewModel.playVideo(activity, item, position)
+                    /*MediaUtils.openList(activity,videoListAdapter.all.flatMap {  when (it) {
                         is MediaWrapper -> listOf(it)
                         else -> listOf()
-                    }},position,false)
+                    }},position,false)*/
                     //MediaUtils.openList(activity, b2a(videoListAdapter.all), position)
                 }
             }
@@ -610,6 +623,12 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
                 else -> activity?.open(item)
             }
         }
+    }
+
+
+
+    fun openDirectories(v: View) {
+
     }
 
 

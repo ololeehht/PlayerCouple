@@ -44,6 +44,14 @@ class VideoListAdapter(private var isSeenMediaMarkerVisible: Boolean
 ) : PagedListAdapter<MediaLibraryItem, VideoListAdapter.ViewHolder>(VideoItemDiffCallback),
         MultiSelectAdapter<MediaLibraryItem>, IEventsSource<VideoAction> by EventsSource() {
 
+
+    companion object {
+        //ViewType
+        val VIEW_TYPE_FOLDER=1
+        val VIEW_TYPE_VIEWGROUP=2
+        val VIEW_TYPE_MEDIAWRAPPER=4
+    }
+
     //var isListMode=false
     var isListMode = true
     var dataType = VideoGroupingType.NONE
@@ -73,15 +81,18 @@ class VideoListAdapter(private var isSeenMediaMarkerVisible: Boolean
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
+
         //val binding = DataBindingUtil.inflate<ViewDataBinding>(inflater, if (isListMode) R.layout.video_list_card else R.layout.video_grid_card, parent, false)
-        val binding = DataBindingUtil.inflate<ViewDataBinding>(inflater,  R.layout.video_list_card , parent, false)
-        if (!isListMode) {
-            val params = binding.root.layoutParams as GridLayoutManager.LayoutParams
+        val oriHolderBinding = DataBindingUtil.inflate<ViewDataBinding>(inflater, if(viewType== VIEW_TYPE_FOLDER) R.layout.video_list_item_noimg else R.layout.video_list_card , parent, false)
+        //if(viewType== VIEW_TYPE_MEDIAWRAPPER)R.layout.video_list_card  else R.layout.video_list_item_noimg
+        //val folderHolderBinding=DataBindingUtil.inflate<ViewDataBinding>(inflater,R.layout.video_list_card,)
+       /* if (!isListMode) {
+            val params = oriHolderBinding.root.layoutParams as GridLayoutManager.LayoutParams
             params.width = gridCardWidth
             params.height = params.width * 10 / 16
-            binding.root.layoutParams = params
-        }
-        return ViewHolder(binding)
+            oriHolderBinding.root.layoutParams = params
+        }*/
+        return ViewHolder(oriHolderBinding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -99,7 +110,10 @@ class VideoListAdapter(private var isSeenMediaMarkerVisible: Boolean
             val media = getItem(position)
             for (data in payloads) {
                 when (data as Int) {
-                    UPDATE_THUMB -> loadImage(holder.overlay, media)
+                    UPDATE_THUMB ->{
+                        LogUtils.loge("=======${media.toString()}")
+                        loadImage(holder.overlay, media)
+                    }
                     UPDATE_TIME, UPDATE_SEEN -> fillView(holder, media as MediaWrapper)
                     UPDATE_SELECTION -> holder.selectView(multiSelectHelper.isSelected(position))
                     UPDATE_VIDEO_GROUP -> fillView(holder, media!!)
@@ -114,7 +128,14 @@ class VideoListAdapter(private var isSeenMediaMarkerVisible: Boolean
 
     override fun getItem(position: Int) = if (isPositionValid(position)) super.getItem(position) else null
 
-    private fun isPositionValid(position: Int) =  position in 0 until itemCount
+    private fun isPositionValid(position: Int):Boolean{
+            return position in 0 until itemCount
+    }
+    /*if(getItemViewType(position)== VIEW_TYPE_FOLDER) {
+            LogUtils.loge("===Folder")
+            return position in 0 until itemCount
+        }
+        else*/
 
     private fun fillView(holder: ViewHolder, item: MediaLibraryItem) {
         when (item) {
@@ -220,6 +241,7 @@ class VideoListAdapter(private var isSeenMediaMarkerVisible: Boolean
         override fun isSelected() = multiSelectHelper.isSelected(layoutPosition)
     }
 
+
     private object VideoItemDiffCallback : DiffUtil.ItemCallback<MediaLibraryItem>() {
         override fun areItemsTheSame(oldItem: MediaLibraryItem, newItem: MediaLibraryItem) = when {
             oldItem is MediaWrapper && newItem is MediaWrapper -> {
@@ -252,6 +274,30 @@ class VideoListAdapter(private var isSeenMediaMarkerVisible: Boolean
 
     fun setSeenMediaMarkerVisible(seenMediaMarkerVisible: Boolean) {
         isSeenMediaMarkerVisible = seenMediaMarkerVisible
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        when(getItem(position))
+        {
+            is Folder->{
+                LogUtils.loge("###viewtype: Folder")
+                return VIEW_TYPE_FOLDER
+            }
+            is VideoGroup->{
+                LogUtils.loge("###viewtype: ViewGroup")
+                return VIEW_TYPE_VIEWGROUP
+            }
+            is MediaWrapper->{
+                LogUtils.loge("###viewtype: MediaWrapper")
+                return VIEW_TYPE_MEDIAWRAPPER
+            }
+            else->
+            {
+                LogUtils.loge("###viewtype: else")
+                return super.getItemViewType(position)
+            }
+        }
+
     }
 }
 

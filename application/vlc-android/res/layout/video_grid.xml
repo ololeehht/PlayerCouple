@@ -10,6 +10,10 @@
         <variable
                 name="empty"
                 type="boolean" />
+
+        <variable
+            name="isFolder"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,15 +35,25 @@
             android:layout_height="40dp"
             app:layout_constraintTop_toTopOf="@+id/searchButton"
             />
+
+        <include
+            android:id="@+id/directories_entry_layout"
+            layout="@layout/directoriew_entry"
+            android:visibility="@{isFolder? View.VISIBLE : View.GONE}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/video_tab"
+            />
         <org.videolan.vlc.gui.view.SwipeRefreshLayout
             android:id="@+id/swipeLayout"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/video_tab"
+            app:layout_constraintTop_toBottomOf="@+id/directories_entry_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="@{empty ? View.GONE : View.VISIBLE}">
+
 
 
             <org.videolan.vlc.gui.view.AutoFitRecyclerView

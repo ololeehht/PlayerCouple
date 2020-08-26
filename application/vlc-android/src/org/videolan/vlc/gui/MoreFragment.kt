@@ -73,6 +73,49 @@ private const val KEY_SELECTION = "key_selection"
 @ExperimentalCoroutinesApi
 class MoreFragment : BaseFragment(), IRefreshable, IHistory,
         IStreamsFragmentDelegate by StreamsFragmentDelegate() {
+    /*
+    1、2、3、5、8、13、21
+    f(n)=f(n-1)+f(n-2)
+    private static int count(int ladder) {
+    if (ladder == 1 || ladder == 2) {
+        return ladder;
+    }
+    int n1 = 1;
+    int n2 = 2;
+    for (int i = 3; i <= ladder; i++) {
+        int tmp = n2;
+        n2 = n1 + n2;
+        n1 = tmp;
+    }
+    return n2;
+}
+
+
+public static Node reverseList(Node node) {
+	Node pre = null;
+	Node next = null;
+	while (node != null) {
+		next = node.next;
+		node.next = pre;
+		pre = node;
+		node = next;
+	}
+	return pre;
+}
+依旧是1->2->3->4
+    准备两个空结点 pre用来保存先前结点、next用来做临时变量
+    在头结点node遍历的时候此时为1结点
+        next = 1结点.next(2结点)
+        1结点.next=pre(null)
+        pre = 1结点
+        node = 2结点
+    进行下一次循环node=2结点
+        next = 2结点.next(3结点)
+        2结点.next=pre(1结点)=>即完成2->1
+        pre = 2结点
+        node = 3结点
+    进行循环...
+    * */
 
     private lateinit var streamsAdapter: MRLAdapter
     private lateinit var historyEntry: TitleListView
