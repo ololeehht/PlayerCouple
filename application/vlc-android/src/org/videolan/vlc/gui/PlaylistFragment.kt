@@ -120,7 +120,7 @@ class PlaylistFragment : BaseAudioBrowser<PlaylistsViewModel>(), SwipeRefreshLay
         if (playlists.itemDecorationCount > 0) {
             playlists.removeItemDecorationAt(0)
         }
-        when (viewModel.providerInCard) {
+       when (false) {//viewModel.providerInCard
             true -> {
                 adapter?.cardSize = RecyclerSectionItemGridDecoration.getItemSize(requireActivity().getScreenWidth(), nbColumns, spacing)
                 adapter?.let { adapter -> displayListInGrid(playlists, adapter, viewModel.provider as MedialibraryProvider<MediaLibraryItem>, spacing) }

@@ -130,7 +130,8 @@ class AudioBrowserFragment : BaseAudioBrowser<AudioBrowserViewModel>() {
         }
 
         for (i in 0 until MODE_TOTAL) {
-            setupLayoutManager(viewModel.providersInCard[i], lists[i], viewModel.providers[i] as MedialibraryProvider<MediaLibraryItem>, adapters[i], spacing)
+            //&&false
+            setupLayoutManager(viewModel.providersInCard[i]&&false, lists[i], viewModel.providers[i] as MedialibraryProvider<MediaLibraryItem>, adapters[i], spacing)
             (lists[i].layoutManager as LinearLayoutManager).recycleChildrenOnDetach = true
             val list = lists[i]
             list.adapter = adapters[i]
