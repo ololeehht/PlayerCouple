@@ -111,6 +111,9 @@
     <attr name="ic_mute_on" format="reference"/>
     <attr name="ic_mute_off" format="reference"/>
 
+    <attr name="ic_resize" format="reference"/>
+    <attr name="ic_rotate" format="reference"/>
+
     <attr name="advanced_options_style" format="reference" />
     <attr name="advanced_options_bg" format="reference"/>
 

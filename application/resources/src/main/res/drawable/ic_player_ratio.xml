@@ -1,14 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="28dp"
-    android:height="28dp"
-    android:viewportWidth="36"
-    android:viewportHeight="36">
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+
   <path
-      android:pathData="M9,9C7.892,9 7,9.892 7,11L7,25C7,26.108 7.892,27 9,27L27,27C28.108,27 29,26.108 29,25L29,11C29,9.892 28.108,9 27,9L9,9zM9,11L27,11L27,25L9,25L9,11zM11,13L11,18L13,18L13,15L16,15L16,13L11,13zM23,18L23,21L20,21L20,23L25,23L25,18L23,18z"
-      android:strokeLineJoin="miter"
-      android:strokeWidth="0.75"
-      android:fillColor="?attr/player_icon_color"
-      android:strokeColor="#00000000"
-      android:fillType="evenOdd"
-      android:strokeLineCap="butt"/>
+      android:fillColor="#ffffff"
+      android:pathData="M810.666667 512h-85.333334v128h-128v85.333333h213.333334v-213.333333zM298.666667 384h128V298.666667H213.333333v213.333333h85.333334V384z m597.333333-256H128a85.333333 85.333333 0 0 0-85.333333 85.333333v597.333334a85.333333 85.333333 0 0 0 85.333333 85.333333h768a85.333333 85.333333 0 0 0 85.333333-85.333333V213.333333a85.333333 85.333333 0 0 0-85.333333-85.333333z m0 682.666667H128V213.333333h768v597.333334z" />
 </vector>

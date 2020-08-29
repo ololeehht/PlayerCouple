@@ -56,7 +56,6 @@ import org.videolan.vlc.media.MediaUtils
 import org.videolan.vlc.util.FileUtils
 import org.videolan.vlc.viewmodels.PlaylistModel
 import java.lang.Runnable
-import java.util.prefs.NodeChangeListener
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -112,6 +111,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
     lateinit var toggleModeButton:ImageView//选择播放列表随机模式
     lateinit var playlistContainer: View
     lateinit var playlist: RecyclerView
+    lateinit var belowPlayList:RecyclerView
     //lateinit var playlistSearchText: TextInputLayout
     lateinit var playlistAdapter: PlaylistAdapter
 
@@ -440,8 +440,9 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             hudBinding.abRepeatReset.setOnClickListener(player)
             hudBinding.abRepeatStop.setOnClickListener(player)
             abRepeatAddMarker.setOnClickListener(player)
-            hudBinding.orientationToggle.setOnClickListener(if (enabled) player else null)
-            hudBinding.orientationToggle.setOnLongClickListener(if (enabled) player else null)
+            hudBinding.popupPlayer.setOnClickListener(player)
+            /*hudBinding.orientationToggle.setOnClickListener(if (enabled) player else null)
+            hudBinding.orientationToggle.setOnLongClickListener(if (enabled) player else null)*/
             /*hudBinding.swipeToUnlock.setOnStartTouchingListener { showOverlayTimeout(VideoPlayerActivity.OVERLAY_INFINITE) }
             hudBinding.swipeToUnlock.setOnStopTouchingListener { showOverlayTimeout(VideoPlayerActivity.OVERLAY_TIMEOUT) }
             hudBinding.swipeToUnlock.setOnUnlockListener { player.toggleLock() }*/
@@ -463,7 +464,8 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
     fun resetHudLayout() {
         if (!::hudBinding.isInitialized) return
         if ( !AndroidDevices.isChromeBook) {
-            hudBinding.orientationToggle.setVisible()
+            //hudBinding.orientationToggle.setVisible()
+            hudBinding.popupPlayer.setVisible()
         }
     }
 
@@ -488,7 +490,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             } else {
                 R.drawable.ic_player_lock_portrait
             }
-            hudBinding.orientationToggle.setImageDrawable(ContextCompat.getDrawable(player, drawable))
+            //hudBinding.orientationToggle.setImageDrawable(ContextCompat.getDrawable(player, drawable))
         }
     }
 
@@ -527,10 +529,11 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             applyMargin(hudBinding.playerOverlayForward, largeMargin.toInt(), false)
 
             applyMargin(hudRightBinding.playerOverlayTracks, smallMargin.toInt() , false)
-            applyMargin(hudBinding.orientationToggle, smallMargin.toInt(), false)
-            applyMargin(hudBinding.playerResize, smallMargin.toInt(), true)
+//            applyMargin(hudBinding.orientationToggle, smallMargin.toInt(), false)
+            applyMargin(hudBinding.popupPlayer, smallMargin.toInt(), false)
+            //applyMargin(hudBinding.playerResize, smallMargin.toInt(), true)
             //applyMargin(hudBinding.playerOverlayAdvFunction, smallMargin.toInt(), true)
-
+            applyMargin(hudBinding.toggleBottomPlaylist, smallMargin.toInt(), true)
             hudBinding.playerOverlaySeekbar.setPadding(overscanHorizontal, 0, overscanHorizontal, 0)
 
 
@@ -568,6 +571,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
                 playlistAdapter = PlaylistAdapter(player)
                 val layoutManager = LinearLayoutManager(player, RecyclerView.VERTICAL, false)
                 playlist.layoutManager = layoutManager
+                belowPlayList.layoutManager= LinearLayoutManager(player, RecyclerView.VERTICAL, false)
             }
             if (player.playlistModel == null) {
                 player.playlistModel = ViewModelProvider(player).get(PlaylistModel::class.java).apply {
@@ -588,6 +592,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             val callback = SwipeDragItemTouchHelperCallback(playlistAdapter, true)
             val touchHelper = ItemTouchHelper(callback)
             touchHelper.attachToRecyclerView(playlist)
+            touchHelper.attachToRecyclerView(belowPlayList)
         }
     }
 
@@ -659,6 +664,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
         hideOverlay(true)
         playlistContainer.setVisible()
         playlist.adapter = playlistAdapter
+        belowPlayList.adapter=playlistAdapter
         player.update()
     }
 
@@ -667,12 +673,14 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
         if (::hudBinding.isInitialized) {
             hudBinding.playerOverlayPlay.visibility = if (show) View.VISIBLE else View.INVISIBLE
             if (seekButtons) {
-                hudBinding.playerOverlayRewind.visibility = if (show) View.VISIBLE else View.INVISIBLE
-                hudBinding.playerOverlayForward.visibility = if (show) View.VISIBLE else View.INVISIBLE
+                hudBinding.playerOverlayRewind.visibility = if (show&&player.showIconsInSmallPlayer) View.VISIBLE else View.INVISIBLE
+                hudBinding.playerOverlayForward.visibility = if (show&&player.showIconsInSmallPlayer) View.VISIBLE else View.INVISIBLE
             }
-            hudRightBinding.playerOverlayTracks.visibility = if (show) View.VISIBLE else View.INVISIBLE
+           // hudRightBinding.playerOverlayTracks.visibility = if (show&&player.showIconsInSmallPlayer) View.VISIBLE else View.INVISIBLE
             //hudBinding.playerOverlayAdvFunction.visibility = if (show) View.VISIBLE else View.INVISIBLE
-            hudBinding.playerResize.visibility = if (show) View.VISIBLE else View.INVISIBLE
+
+            hudBinding.toggleBottomPlaylist.visibility = if (show&&player.showIconsInSmallPlayer) View.VISIBLE else View.INVISIBLE
+
             if (hasPlaylist) {
                 hudBinding.playlistPrevious.visibility = if (show) View.VISIBLE else View.INVISIBLE
                 hudBinding.playlistNext.visibility = if (show) View.VISIBLE else View.INVISIBLE
@@ -680,7 +688,8 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             else{
                 hudBinding.videoPlayerPlaylist.visibility =  View.INVISIBLE
             }
-            hudBinding.orientationToggle.visibility = if (AndroidDevices.isChromeBook) View.INVISIBLE else if (show) View.VISIBLE else View.INVISIBLE
+            //hudBinding.orientationToggle.visibility = if (AndroidDevices.isChromeBook) View.INVISIBLE else if (show&&player.showIconsInSmallPlayer) View.VISIBLE else View.INVISIBLE
+            hudBinding.popupPlayer.visibility = if (AndroidDevices.isChromeBook) View.INVISIBLE else if (show&&player.showIconsInSmallPlayer) View.VISIBLE else View.INVISIBLE
         }
         if (::hudRightBinding.isInitialized) {
             val secondary = player.displayManager.isSecondary
@@ -688,7 +697,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             hudRightBinding.videoSecondaryDisplay.visibility = if (!show) View.GONE else if (UiTools.hasSecondaryDisplay(player.applicationContext)) View.VISIBLE else View.GONE
             hudRightBinding.videoSecondaryDisplay.contentDescription = player.resources.getString(if (secondary) R.string.video_remote_disable else R.string.video_remote_enable)
           //  hudRightBinding.playlistToggle.setGone()/// = if (show && player.service?.hasPlaylist() == true) View.VISIBLE else View.GONE
-            hudRightBinding.playerOverlayTracks.visibility=if (show && player.service?.hasPlaylist() == true) View.VISIBLE else View.GONE
+            hudRightBinding.playerOverlayTracks.visibility=if (show &&player.showIconsInSmallPlayer&& player.service?.hasPlaylist() == true) View.VISIBLE else View.GONE
         }
     }
 

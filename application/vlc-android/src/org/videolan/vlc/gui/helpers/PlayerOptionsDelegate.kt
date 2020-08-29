@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.qh.mplayer.utils.LogUtils
+import kotlinx.android.synthetic.main.player.*
 import kotlinx.coroutines.*
 import org.videolan.resources.*
 import org.videolan.tools.AppScope
@@ -43,6 +44,7 @@ import org.videolan.vlc.gui.helpers.UiTools.addToPlaylist
 import org.videolan.vlc.gui.video.VideoPlayerActivity
 import org.videolan.vlc.media.PlayerController
 import java.util.*
+import java.util.Collections.rotate
 
 private const val ACTION_AUDIO_DELAY = 2
 private const val ACTION_SPU_DELAY = 3
@@ -62,9 +64,11 @@ private const val ID_SHUFFLE = 11L
 private const val ID_PASSTHROUGH = 12L
 private const val ID_ABREPEAT = 13L
 private const val ID_LOCK_PLAYER = 14L
-private const val ID_VIDEO_STATS = 15L
+private const val ID_VIDEO_STATS = 15L//info 视频信息
 private const val ID_MUTE=16L//静音
-
+private const val ID_TOGGLE_FULL_PLAY=17L//弹出播放列表
+private const val ID_RESIZE=18L//
+private const val ID_ROTATE=19L
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
 @SuppressLint("ShowToast")
@@ -84,7 +88,8 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
     private lateinit var shuffleBinding: PlayerOptionItemBinding//随机模式
     private lateinit var sleepBinding: PlayerOptionItemBinding//睡眠计时器
     private lateinit var muteBinding:PlayerOptionItemBinding
-
+    private lateinit var resizeBinding: PlayerOptionItemBinding
+    private lateinit var rotateBinding: PlayerOptionItemBinding
     private val abrObs = Observer<Boolean> { abr ->
         if (abr == null || !this::abrBinding.isInitialized) return@Observer
         val resid = when {
@@ -120,19 +125,35 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
        * */
         options.add(PlayerOption(ID_SLEEP, R.attr.ic_sleep_normal_style, res.getString(R.string.sleep_title)))
         options.add(PlayerOption(ID_JUMP_TO, R.attr.ic_jumpto_normal_style, res.getString(R.string.jump_to_time)))
+        if(video)
+        {
+            /*
+             * resize video
+            * */
+            options.add(PlayerOption(ID_RESIZE,R.attr.ic_resize,res.getString(R.string.resize)))
+            /*
+            * 旋转
+            * */
+            options.add(PlayerOption(ID_ROTATE,R.attr.ic_rotate,res.getString(R.string.rotate)))
+            (recyclerview.adapter as OptionsAdapter).update(options)
+        }
         options.add(PlayerOption(ID_EQUALIZER, R.attr.ic_equalizer_normal_style, res.getString(R.string.equalizer)))
         if (video) {
             /*if (primary && !Settings.showTvUi && service.audioTracksCount > 0)
                 options.add(PlayerOption(ID_PLAY_AS_AUDIO, R.attr.ic_playasaudio_on, res.getString(R.string.play_as_audio)))*/
-            if (primary && AndroidDevices.pipAllowed && !AndroidDevices.isDex(activity))
-                options.add(PlayerOption(ID_POPUP_VIDEO, R.attr.ic_popup_dim, res.getString(R.string.ctx_pip_title)))
-            if (primary)
+            /*弹出播放器*/
+           /* if (primary && AndroidDevices.pipAllowed && !AndroidDevices.isDex(activity))
+                options.add(PlayerOption(ID_POPUP_VIDEO, R.attr.ic_popup_dim, res.getString(R.string.ctx_pip_title)))*/
+           /* if (primary)
                 options.add(PlayerOption(ID_REPEAT, R.drawable.ic_repeat, res.getString(R.string.repeat_title)))
-            if (service.canShuffle()) options.add(PlayerOption(ID_SHUFFLE, R.drawable.ic_shuffle, res.getString(R.string.shuffle_title)))
+            if (service.canShuffle()) options.add(PlayerOption(ID_SHUFFLE, R.drawable.ic_shuffle, res.getString(R.string.shuffle_title)))*/
             val chaptersCount = service.getChapters(-1)?.size ?: 0
             if (chaptersCount > 1) options.add(PlayerOption(ID_CHAPTER_TITLE, R.attr.ic_chapter_normal_style, res.getString(R.string.go_to_chapter)))
-            //options.add(PlayerOption(ID_VIDEO_STATS, R.attr.ic_video_stats, res.getString(R.string.video_information)))
+
+          /*  if(primary)
+                options.add(PlayerOption(ID_TOGGLE_FULL_PLAY,R.drawable.ic_repeat,"打开下面的播放列表"))*/
         }
+        if(video) {options.add(PlayerOption(ID_VIDEO_STATS, R.attr.ic_video_stats, res.getString(R.string.video_information))) }
         /*
         * AB重复模式
         * */
@@ -143,7 +164,7 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
         //options.add(PlayerOption(ID_SAVE_PLAYLIST, R.attr.ic_save, res.getString(R.string.playlist_save)))
         if (service.playlistManager.player.canDoPassthrough() && settings.getString("·", "0") == "0")
             options.add(PlayerOption(ID_PASSTHROUGH, R.attr.ic_passthrough, res.getString(R.string.audio_digital_title)))
-        (recyclerview.adapter as OptionsAdapter).update(options)
+
 
     }
 
@@ -214,11 +235,22 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
                 //静音
 
             }
+            ID_TOGGLE_FULL_PLAY->{
+                hide()
+                (activity as VideoPlayerActivity).attachToWindowRokcy()
+            }
+            ID_RESIZE->{//播放器的大小resize
+                (activity as VideoPlayerActivity).resizeVideo()
+            }
+            ID_ROTATE->{
+                hide()
+                (activity as VideoPlayerActivity).rotateScreenorientation()
+            }
             else -> showFragment(option.id)
         }
     }
 
-    public fun toogleLockPack(){
+     fun toogleLockPack(){
         hide()
         (activity as VideoPlayerActivity).toggleLock()
     }
@@ -304,7 +336,7 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
             }
         }
     }
-    
+
 
 
     /*
@@ -416,7 +448,28 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
                 muteBinding.optionTitle.setText(R.string.mute)
             }
         }
+    }
 
+    private fun initResize(binding: PlayerOptionItemBinding) {
+        resizeBinding=binding
+        AppScope.launch(Dispatchers.Main){
+            if(activity is VideoPlayerActivity)
+            {
+                resizeBinding.optionIcon.setImageResource(R.drawable.ic_player_ratio)
+                resizeBinding.optionTitle.setText(R.string.resize)
+            }
+        }
+    }
+
+    private fun initRotate(binding: PlayerOptionItemBinding){
+        rotateBinding=binding
+        AppScope.launch(Dispatchers.Main){
+            if(activity is VideoPlayerActivity)
+            {
+                rotateBinding.optionIcon.setImageResource(R.drawable.ic_player_option_rotate)
+                rotateBinding.optionTitle.setText(R.string.rotate)
+            }
+        }
     }
 
     private fun togglePassthrough() {
@@ -459,6 +512,8 @@ class PlayerOptionsDelegate(val activity: AppCompatActivity, val service: Playba
                 option.id == ID_JUMP_TO -> initJumpTo(holder.binding)
                 option.id == ID_SPU_DELAY -> initSpuDelay(holder.binding)
                 option.id == ID_MUTE -> initMute(holder.binding)
+                option.id == ID_RESIZE -> initResize(holder.binding)
+                option.id == ID_ROTATE -> initRotate(holder.binding)
             }
             holder.binding.optionIcon.setImageResource(UiTools.getResourceFromAttribute(activity, option.icon))
         }

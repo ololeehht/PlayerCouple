@@ -118,6 +118,8 @@
         <item name="rounded_corners_bottom_default_darker">@drawable/rounded_corners_bottom_default_darker_light</item>
         <item name="ic_mute_on">@drawable/ic_mute_on</item>
         <item name="ic_mute_off" >@drawable/ic_mute_off</item>
+        <item name="ic_resize">@drawable/ic_player_ratio</item>
+        <item name="ic_rotate">@drawable/ic_player_rotate</item>
     </style>
 
     <style name="Theme.VLC.PickerDialog" parent="Theme.MaterialComponents.Dialog">

@@ -76,6 +76,7 @@ class StartActivity : FragmentActivity() {
                     "vlc.shortcut.network" -> R.id.nav_network
                     "vlc.shortcut.playlists" -> R.id.nav_playlists
                     "vlc.shortcut.resume" -> R.id.ml_menu_last_playlist
+                    "vlc.shortcut.favorites" -> R.id.nav_favorites
                     else -> 0
                 }
             }

@@ -105,7 +105,8 @@ open class BaseBrowserAdapter(val browserContainer: BrowserContainer<MediaLibrar
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<ViewDataBinding> {
         val inflater = LayoutInflater.from(parent.context)
         return if (viewType == TYPE_MEDIA || viewType == TYPE_STORAGE)
-            MediaViewHolder(if (browserContainer.inCards) BrowserItemBindingContainer(CardBrowserItemBinding.inflate(inflater, parent, false)) else BrowserItemBindingContainer(BrowserItemBinding.inflate(inflater, parent, false)))
+            /*browserContainer.inCards*/
+            MediaViewHolder(if (false) BrowserItemBindingContainer(CardBrowserItemBinding.inflate(inflater, parent, false)) else BrowserItemBindingContainer(BrowserItemBinding.inflate(inflater, parent, false)))
         else
             SeparatorViewHolder(BrowserItemSeparatorBinding.inflate(inflater, parent, false)) as ViewHolder<ViewDataBinding>
     }

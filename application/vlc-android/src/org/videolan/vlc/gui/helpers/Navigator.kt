@@ -48,10 +48,7 @@ import org.videolan.vlc.extensions.ExtensionsManager
 import org.videolan.vlc.extensions.api.VLCExtensionItem
 import org.videolan.vlc.gui.*
 import org.videolan.vlc.gui.audio.AudioBrowserFragment
-import org.videolan.vlc.gui.browser.BaseBrowserFragment
-import org.videolan.vlc.gui.browser.ExtensionBrowser
-import org.videolan.vlc.gui.browser.MainBrowserFragment
-import org.videolan.vlc.gui.browser.NetworkBrowserFragment
+import org.videolan.vlc.gui.browser.*
 import org.videolan.vlc.gui.preferences.PreferencesActivity
 import org.videolan.vlc.gui.video.VideoGridFragment
 
@@ -111,9 +108,10 @@ class Navigator : BottomNavigationView.OnNavigationItemSelectedListener, Lifecyc
     private fun getNewFragment(id: Int): Fragment {
         return when (id) {
             R.id.nav_audio -> AudioBrowserFragment()
-            R.id.nav_directories -> MainBrowserFragment()
+            R.id.nav_directories -> StorageDevicesFragment()//MainBrowserFragment()
             R.id.nav_playlists -> PlaylistFragment()
             R.id.nav_network -> NetworkBrowserFragment()
+            R.id.nav_favorites -> FavoriteBrowserFragment()
            /* R.id.nav_more -> MoreFragment()*/
             else -> VideoGridFragment()
         }
@@ -127,6 +125,7 @@ class Navigator : BottomNavigationView.OnNavigationItemSelectedListener, Lifecyc
                activity.toolbarTitle.setText(activity.getString(R.string.audio))
            }
            R.id.nav_playlists->activity.toolbarTitle.setText(activity.getString(R.string.playlists))
+           R.id.nav_favorites->activity.toolbarTitle.setText(activity.getString(R.string.favorite))
        }
          val tag = getTag(id)
          val fragment = getNewFragment(id)
@@ -171,6 +170,7 @@ class Navigator : BottomNavigationView.OnNavigationItemSelectedListener, Lifecyc
         R.id.nav_history -> ID_HISTORY
         R.id.nav_mrl -> ID_MRL
         R.id.nav_network -> ID_NETWORK
+        R.id.nav_favorites -> ID_FAVORITE
         else -> ID_VIDEO
     }
 

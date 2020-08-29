@@ -267,6 +267,12 @@ class MainActivity : ContentActivity(),ExtensionManagerService.ExtensionManagerA
             R.id.nav_directories -> "MainBrowserFragment"
             R.id.nav_network -> "NetworkBrowserFragment"
            R.id.nav_playlists->"PlaylistFragment"
+           R.id.nav_favorites->{
+               val i = Intent(this, SecondaryActivity::class.java)
+               i.putExtra("fragment", SecondaryActivity.FAVORITES)
+               startActivityForResult(i, SecondaryActivity.ACTIVITY_RESULT_SECONDARY)
+               return true
+           }
            R.id.nav_history->{
                val i = Intent(this, SecondaryActivity::class.java)
                i.putExtra("fragment", SecondaryActivity.HISTORY)

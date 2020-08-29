@@ -30,7 +30,6 @@ import android.bluetooth.BluetoothHeadset
 import android.content.*
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.net.Uri
 import android.os.*
@@ -41,8 +40,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Rational
 import android.view.*
-import android.view.View.OnClickListener
-import android.view.View.OnLongClickListener
+import android.view.View.*
 import android.view.animation.Animation
 import android.view.animation.AnimationSet
 import android.view.animation.DecelerateInterpolator
@@ -64,7 +62,6 @@ import androidx.core.content.edit
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -74,7 +71,6 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.qh.mplayer.utils.LogUtils
 import kotlinx.android.synthetic.main.player_overlay_brightness.*
 import kotlinx.android.synthetic.main.player_overlay_volume.*
-import kotlinx.android.synthetic.main.subtitle_downloader_dialog.view.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -117,7 +113,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
     private lateinit var startedScope : CoroutineScope
     var service: PlaybackService? = null
     private lateinit var medialibrary: Medialibrary
-    private var videoLayout: VLCVideoLayout? = null
+    var videoLayout: VLCVideoLayout? = null
     lateinit var displayManager: DisplayManager
     private var rootView: View? = null
     var videoUri: Uri? = null
@@ -179,6 +175,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
     private var audioTracksList: Array<MediaPlayer.TrackDescription>? = null
     private var videoTracksList: Array<MediaPlayer.TrackDescription>? = null
     var subtitleTracksList: Array<MediaPlayer.TrackDescription>? = null
+    var didPopUpWindowsPlay:Boolean=false
 
     /**
      * Flag to indicate whether the media should be paused once loaded
@@ -395,6 +392,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
 
 
         overlayDelegate.playlist = findViewById(R.id.video_playlist)
+        overlayDelegate.belowPlayList=findViewById(R.id.popup_video_playlist)
         //overlayDelegate.playlistSearchText = findViewById(R.id.playlist_search_text)
         overlayDelegate.playlistContainer = findViewById(R.id.video_playlist_container)
         overlayDelegate.closeButton = findViewById(R.id.close_button)
@@ -570,6 +568,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
                 && (finishing || (AndroidUtil.isNougatOrLater && !AndroidUtil.isOOrLater //Video on background on Nougat Android TVs
                         && AndroidDevices.isAndroidTv && !requestVisibleBehind(true))))
             stopPlayback()
+        didPopUpWindowsPlay=false
     }
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -869,6 +868,7 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
     }
 
     override fun onBackPressed() {
+        showIconsInSmallPlayer=true
         if (optionsDelegate?.isShowing() == true) {
             optionsDelegate?.hide()
         } else if (lockBackButton) {
@@ -1469,7 +1469,10 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         popupMenu.show()
     }
 
-    override fun onSelectionSet(position: Int) = overlayDelegate.playlist.scrollToPosition(position)
+    override fun onSelectionSet(position: Int){
+        overlayDelegate.playlist.scrollToPosition(position)
+        overlayDelegate.belowPlayList.scrollToPosition(position)
+    }
 
     override fun playItem(position: Int, item: MediaWrapper) {
         service?.playIndex(position)
@@ -1477,8 +1480,8 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.orientation_toggle -> toggleOrientation()
-
+           /* R.id.orientation_toggle -> toggleOrientation()*/
+            R.id.popup_player->{switchToPopup()}
             R.id.player_overlay_forward -> touchDelegate.seekDelta(10000)
             R.id.player_overlay_rewind -> touchDelegate.seekDelta(-10000)
             R.id.ab_repeat_add_marker -> service?.playlistManager?.setABRepeatValue(overlayDelegate.hudBinding.playerOverlaySeekbar.progress.toLong())
@@ -1651,6 +1654,8 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         setVideoScale(scale)
         handler.sendEmptyMessage(SHOW_INFO)
     }
+
+
 
     internal fun setVideoScale(scale: MediaPlayer.ScaleType) = service?.run {
         mediaplayer.videoScale = scale
@@ -2212,7 +2217,14 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
     }
 
     fun finishThisActivity(anchor: View?){
-        finish()
+       if(didPopUpWindowsPlay)//弹出播放器列表
+       {
+           detachFromWindowRokcy()
+       }
+        else{
+           finish()
+           showIconsInSmallPlayer=true
+       }
     }
 
     companion object {
@@ -2300,8 +2312,136 @@ open class VideoPlayerActivity : AppCompatActivity(), PlaybackService.Callback, 
         }
     }
 
+    fun setVideoMatherSmallPlayer()=service?.run{
+        mediaplayer.videoScale=MediaPlayer.ScaleType.SURFACE_BEST_FIT
+        settings.putSingle(VIDEO_RATIO,mediaplayer.videoScale.ordinal)
+    }
 
+    var showIconsInSmallPlayer:Boolean=true
+
+    fun getVisibility(visibility: Boolean)=if(visibility)View.VISIBLE else View.INVISIBLE
+
+    fun otherIconVisible(visibility: Boolean){
+        if(overlayDelegate.isHudBindingInitialized())
+        {
+            val hudBinding = overlayDelegate.hudBinding
+            hudBinding.videoPlayerLock.visibility=getVisibility(visibility)
+            hudBinding.videoPlayerMore.visibility=getVisibility(visibility)
+            hudBinding.videoPlayerPlaylist.visibility=getVisibility(visibility)
+            hudBinding.videoPlayerPlayaudio.visibility=getVisibility(visibility)
+//            hudBinding.playerResize.visibility=getVisibility(visibility)
+            hudBinding.toggleBottomPlaylist.visibility=getVisibility(visibility)
+            val seekButtons = settings.getBoolean(ENABLE_SEEK_BUTTONS, false)
+            hudBinding.playerOverlayRewind.visibility=getVisibility(visibility&&seekButtons)
+            hudBinding.playerOverlayForward.visibility= getVisibility(visibility&&seekButtons)
+//            hudBinding.orientationToggle.visibility= getVisibility(visibility)
+            hudBinding.popupPlayer.visibility=getVisibility(visibility)
+            showIconsInSmallPlayer=visibility
+        }
+        if(overlayDelegate.isHudRightBindingInitialized())
+        {
+            val hudRightBinding = overlayDelegate.hudRightBinding
+            hudRightBinding.playerOverlayTracks.visibility= getVisibility(visibility)
+        }
+    }
+
+
+    fun attachToWindowRokcy(){
+        didPopUpWindowsPlay=true
+        /*
+        * 先搞成竖着的屏幕
+        * */
+      if(requestedOrientation!=ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+          requestedOrientation=ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        /*
+        * rootView布局参数
+        * */
+        val tempLayouts = rootView?.layoutParams
+        LogUtils.loge("====before change==width:${rootView?.measuredWidth},height:${rootView?.measuredHeight}")
+        tempLayouts?.height=Math.min(rootView?.measuredWidth!!,rootView?.measuredHeight!!)
+        rootView?.layoutParams=tempLayouts
+        LogUtils.loge("====afterchange change==width:${rootView?.layoutParams?.width},height:${rootView?.layoutParams?.height}")
+        rootView?.requestLayout()
+        /*
+        *
+        * */
+        val playerUiContainer = overlayDelegate.playerUiContainer
+        playerUiContainer.layoutParams?.height=Math.min(playerUiContainer.measuredWidth,playerUiContainer.measuredHeight)
+        playerUiContainer.requestLayout()
+        setVideoMatherSmallPlayer()//最为合适
+
+        otherIconVisible(false)
+        overlayDelegate.belowPlayList.adapter=overlayDelegate.playlistAdapter
+        //belowPlayList.adapter=playlistAdapter
+        update()
+
+       /* if (overlayDelegate.isHudBindingInitialized()) {
+            val parent = overlayDelegate.hudBinding.constraintLayout2
+            parent.setPadding(parent.paddingLeft,parent.paddingTop,parent.paddingRight,0)
+        }*/
+        // if()
+
+        /*orientationMode.orientation = screenRotation
+        requestedOrientation = getScreenOrientation(orientationMode)*/
+      /*  val tempLayouts = rootView?.layoutParams
+        LogUtils.loge("====before change==width:${rootView?.measuredWidth},height:${rootView?.measuredHeight}")
+        tempLayouts?.height=Math.min(rootView?.measuredWidth!!,rootView?.measuredHeight!!)
+        rootView?.layoutParams=tempLayouts
+        LogUtils.loge("====afterchange change==width:${rootView?.layoutParams?.width},height:${rootView?.layoutParams?.height}")
+        rootView?.requestLayout()*/
+
+    }
+
+    fun detachFromWindowRokcy(){
+        showIconsInSmallPlayer=true
+        didPopUpWindowsPlay=false
+        rootView?.layoutParams?.height=-1
+        rootView?.requestLayout()
+        overlayDelegate.playerUiContainer.layoutParams?.height=-1
+        overlayDelegate.playerUiContainer.requestLayout()
+        otherIconVisible(true)
+
+    }
+
+
+    /*
+* 旋转屏幕
+* */
+
+    /*
+    *  orientationMode.locked = !orientationMode.locked
+        orientationMode.orientation = getOrientationForLock()
+
+        requestedOrientation = getScreenOrientation(orientationMode)
+        overlayDelegate.updateOrientationIcon()
+    * */
+
+    fun rotateScreenorientation(){
+        if(!orientationMode.locked)
+        {
+            orientationMode.locked=false
+        }
+        LogUtils.loge("${screenRotation}")
+        if(requestedOrientation!=ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+        {
+            orientationMode.orientation=ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            LogUtils.loge("screenRotation!=ActivityInfo.SCREEN_ORIENTATION_PORTRAIT")
+        }
+        else //if(screenRotation==ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+        {
+            orientationMode.orientation=ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            LogUtils.loge("else")
+        }
+        requestedOrientation=orientationMode.orientation
+        LogUtils.loge("${requestedOrientation}")
+       // orientationMode.locked=true
+
+    }
 }
+
+
+
+
 
 data class PlayerOrientationMode (
     var locked:Boolean = false,
@@ -2332,3 +2472,4 @@ fun setConstraintPercent(view: Guideline, percent: Float) {
 fun setProgressMax(view: SeekBar, length: Long) {
     view.max = length.toInt()
 }
+

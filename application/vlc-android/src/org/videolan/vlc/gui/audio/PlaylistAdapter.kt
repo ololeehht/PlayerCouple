@@ -25,6 +25,7 @@ package org.videolan.vlc.gui.audio
 
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
@@ -37,17 +38,20 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.MainThread
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import org.videolan.libvlc.util.AndroidUtil
 import org.videolan.medialibrary.interfaces.media.MediaWrapper
+import org.videolan.resources.AndroidDevices
 import org.videolan.resources.AppContextProvider
-import org.videolan.tools.Settings
-import org.videolan.tools.WeakHandler
+import org.videolan.tools.*
 import org.videolan.vlc.R
 import org.videolan.vlc.databinding.PlaylistItemBinding
 import org.videolan.vlc.gui.DiffUtilAdapter
@@ -75,6 +79,7 @@ class PlaylistAdapter(private val player: IPlayer) : DiffUtilAdapter<MediaWrappe
     private var currentPlayingVisu: MiniVisualizer? = null
     private val handler by lazy(LazyThreadSafetyMode.NONE) { Handler() }
 
+
     init {
         val ctx = when (player) {
             is Context -> player
@@ -84,6 +89,8 @@ class PlaylistAdapter(private val player: IPlayer) : DiffUtilAdapter<MediaWrappe
 
         defaultCoverAudio = BitmapDrawable(ctx.resources, getBitmapFromDrawable(ctx, R.drawable.ic_no_song_background))
         defaultCoverVideo = UiTools.getDefaultVideoDrawable(ctx)
+
+
     }
 
     var currentIndex = 0
@@ -128,6 +135,11 @@ class PlaylistAdapter(private val player: IPlayer) : DiffUtilAdapter<MediaWrappe
             holder.binding.playing.stop()
             holder.binding.playing.visibility = View.INVISIBLE
             holder.binding.audioItemTitle.typeface = null
+
+            if(media.type == MediaWrapper.TYPE_VIDEO)
+            {
+                holder.binding.audioItemTitle.setTextColor(Color.WHITE)
+            }
             holder.binding.coverImage.visibility = View.VISIBLE
         }
 

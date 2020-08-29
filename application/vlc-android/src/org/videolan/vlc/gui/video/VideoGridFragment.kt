@@ -1,5 +1,6 @@
 package org.videolan.vlc.gui.video
 
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.opengl.Visibility
@@ -36,6 +37,7 @@ import org.videolan.vlc.gui.ContentActivity
 import org.videolan.vlc.gui.MainActivity
 import org.videolan.vlc.gui.SecondaryActivity
 import org.videolan.vlc.gui.browser.MediaBrowserFragment
+import org.videolan.vlc.gui.browser.StorageDevicesFragment
 import org.videolan.vlc.gui.dialogs.*
 import org.videolan.vlc.gui.helpers.ItemOffsetDecoration
 import org.videolan.vlc.gui.helpers.UiTools
@@ -76,8 +78,6 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
         if (item is Folder) i.putExtra(KEY_FOLDER, item)
         else if (item is VideoGroup) i.putExtra(KEY_GROUP, item)
         startActivityForResult(i, SecondaryActivity.ACTIVITY_RESULT_SECONDARY)
-        binding.directoriesEntryLayout.clickListener=View.OnClickListener {
-            openDirectories(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -194,6 +194,8 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         LogUtils.loge("+++++++++++VideoFragment   onCreateView")
         binding = VideoGridBinding.inflate(inflater, container, false)
+        binding.directoriesEntryLayout.clickListener=View.OnClickListener {
+            openDirectories(it) }
         return binding.root
     }
 
@@ -628,7 +630,13 @@ class VideoGridFragment : MediaBrowserFragment<VideosViewModel>(), SwipeRefreshL
 
 
     fun openDirectories(v: View) {
-
+        if(activity is MainActivity)
+        {
+            val intent = Intent(context?.applicationContext, SecondaryActivity::class.java)
+            intent.putExtra("fragment", SecondaryActivity.DIRECTORIES_BROWSER)
+            activity?.startActivity(intent)
+            //activity?.startActivityForResult(intent, ACTIVITY_RESULT_PREFERENCES)
+        }
     }
 
 

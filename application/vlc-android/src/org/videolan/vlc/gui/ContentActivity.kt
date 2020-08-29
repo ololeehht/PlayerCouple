@@ -62,13 +62,13 @@ open class ContentActivity : AudioPlayerContainerActivity(), SearchView.OnQueryT
                 && Settings.getInstance(this).getBoolean("enable_casting", true)) {
             PlaybackService.renderer.observe(this, Observer {
                 val item = toolbar.menu.findItem(R.id.ml_menu_renderers) ?: return@Observer//======================================
-                item.isVisible = showRenderers
+                item.isVisible =false// showRenderers
                 item.setIcon(if (!PlaybackService.hasRenderer()) R.drawable.ic_am_renderer else R.drawable.ic_am_renderer_on)
             })
             RendererDelegate.renderers.observe(this, Observer<List<RendererItem>> { rendererItems ->
                 showRenderers = !rendererItems.isNullOrEmpty()
                 val item = toolbar.menu.findItem(R.id.ml_menu_renderers)
-                if (item != null) item.isVisible = showRenderers
+                if (item != null) item.isVisible = showRenderers&&false
             })
         }
     }
@@ -106,7 +106,9 @@ open class ContentActivity : AudioPlayerContainerActivity(), SearchView.OnQueryT
             searchItem.setOnActionExpandListener(this)
         } else
             menu.findItem(R.id.ml_menu_filter).isVisible = false
-        menu.findItem(R.id.ml_menu_renderers).isVisible = showRenderers && Settings.getInstance(this).getBoolean("enable_casting", true)
+        //menu.findItem(R.id.ml_menu_renderers).isVisible = showRenderers && Settings.getInstance(this).getBoolean("enable_casting", true)
+        //无论怎么样都不能显示这个图标
+        menu.findItem(R.id.ml_menu_renderers).isVisible=false
         menu.findItem(R.id.ml_menu_renderers).setIcon(if (!PlaybackService.hasRenderer()) R.drawable.ic_am_renderer else R.drawable.ic_am_renderer_on)
         return true
     }

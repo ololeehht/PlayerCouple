@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+<RelativeLayout
         android:id="@+id/player_root"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -67,7 +72,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true">
-
         <androidx.appcompat.widget.ViewStubCompat
                 android:id="@+id/player_overlay_tips"
                 android:layout_width="match_parent"
@@ -116,7 +120,10 @@
                 android:layout="@layout/player_hud"
                 android:layout_alignParentBottom="true" />
 
+
+
     </RelativeLayout>
+
 
 
     <!--搜索媒体-->
@@ -218,7 +225,10 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <!--右侧的操作列表-->
     <androidx.appcompat.widget.ViewStubCompat
@@ -228,3 +238,15 @@
             android:layout="@layout/player_options" />
 
 </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/popup_video_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:descendantFocusability="afterDescendants"
+        android:focusable="true"
+        android:nextFocusUp="@+id/playlist_search_edittext"
+
+        />
+</LinearLayout>

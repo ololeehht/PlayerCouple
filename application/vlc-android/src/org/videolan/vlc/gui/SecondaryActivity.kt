@@ -47,10 +47,8 @@ import org.videolan.tools.RESULT_RESTART
 import org.videolan.vlc.R
 import org.videolan.vlc.gui.audio.AudioAlbumsSongsFragment
 import org.videolan.vlc.gui.audio.AudioBrowserFragment
-import org.videolan.vlc.gui.browser.FileBrowserFragment
+import org.videolan.vlc.gui.browser.*
 import org.videolan.vlc.gui.browser.KEY_MEDIA
-import org.videolan.vlc.gui.browser.NetworkBrowserFragment
-import org.videolan.vlc.gui.browser.StorageBrowserFragment
 import org.videolan.vlc.gui.helpers.UiTools
 import org.videolan.vlc.gui.network.MRLPanelFragment
 import org.videolan.vlc.gui.video.VideoGridFragment
@@ -171,6 +169,8 @@ class SecondaryActivity : ContentActivity() {
                 else FileBrowserFragment()
                 fragment?.apply { arguments = bundleOf(KEY_MEDIA to media) }
             }
+            DIRECTORIES_BROWSER->fragment=StorageDevicesFragment()//打开StorageFragment
+            FAVORITES ->fragment=FavoriteBrowserFragment()
             else -> throw IllegalArgumentException("Wrong fragment id.")
         }
     }
@@ -189,5 +189,7 @@ class SecondaryActivity : ContentActivity() {
         const val VIDEO_GROUP_LIST = "videoGroupList"
         const val STORAGE_BROWSER = "storage_browser"
         const val FILE_BROWSER = "file_browser"
+        const val DIRECTORIES_BROWSER="directories_browser"
+        const val FAVORITES="favorites"
     }
 }

@@ -48,6 +48,11 @@
             android:title="@string/more"
             android:icon="@drawable/ic_nav_more" />-->
     <item
+        android:id="@+id/nav_favorites"
+        android:title="@string/favorite"
+        android:icon="@drawable/ic_ctx_fav_add_normal"
+        />
+    <item
         android:id="@+id/nav_stream"
         android:title="@string/streams"
         android:icon="@drawable/ic_menu_stream" />
